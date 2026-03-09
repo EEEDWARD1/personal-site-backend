@@ -1,8 +1,8 @@
 const router = require('express').Router()
-const auth = requrie('../middleware/auth')
+const auth = require('../middleware/auth')
 const blogController = require('../controllers/blogController')
 
-router.use(auth)
+router.use(auth) // applies to all routes below
 
 router.get('/blogs', blogController.getAllBlogs)
 router.post('/blogs', blogController.createBlog)

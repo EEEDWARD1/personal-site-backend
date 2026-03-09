@@ -2,7 +2,7 @@ const pool = require('../db')
 
 const getPublished = async () => {
     const result = await pool.query(
-        `SELECT * FROM blogs WHERE published = true ORDER BY created_at DESC`
+        'SELECT * FROM blogs WHERE published = true ORDER BY created_at DESC'
     )
     return result.rows
 }
@@ -14,18 +14,17 @@ const getAll = async () => {
     return result.rows
 }
 
-const getByID = async (id) => {
+const getById = async (id) => {
     const result = await pool.query(
         'SELECT * FROM blogs WHERE id = $1',
         [id]
     )
     return result.rows[0]
-
 }
 
 const create = async (user_id, title, content, published) => {
     const result = await pool.query(
-        'INSERT INTO blogs (user_id, title, content, published) VALUES ($1, $2, $3, $4) RETURNING *'
+        'INSERT INTO blogs (user_id, title, content, published) VALUES ($1, $2, $3, $4) RETURNING *',
         [user_id, title, content, published]
     )
     return result.rows[0]
@@ -43,4 +42,4 @@ const remove = async (id) => {
     await pool.query('DELETE FROM blogs WHERE id = $1', [id])
 }
 
-module.exports = {getPublished , getAll, getByID, create, update, remove}
+module.exports = { getPublished, getAll, getById, create, update, remove }

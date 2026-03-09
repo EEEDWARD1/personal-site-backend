@@ -1,10 +1,10 @@
-const blogModel = require(`../models/blogModel`)
+const blogModel = require('../models/blogModel')
 
 const getPublishedBlogs = async (req, res) => {
     try {
         const blogs = await blogModel.getPublished()
         res.json(blogs)
-    } catch (err){
+    } catch (err) {
         res.sendStatus(500)
     }
 }
@@ -13,13 +13,13 @@ const getAllBlogs = async (req, res) => {
     try {
         const blogs = await blogModel.getAll()
         res.json(blogs)
-    } catch (err){
+    } catch (err) {
         res.sendStatus(500)
     }
 }
 
 const createBlog = async (req, res) => {
-    try{
+    try {
         const { title, content, published } = req.body
         const blog = await blogModel.create(req.user.id, title, content, published ?? false)
         res.status(201).json(blog)
@@ -27,6 +27,7 @@ const createBlog = async (req, res) => {
         res.sendStatus(500)
     }
 }
+
 const updateBlog = async (req, res) => {
     try {
         const { title, content, published } = req.body
