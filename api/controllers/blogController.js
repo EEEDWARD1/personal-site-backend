@@ -8,6 +8,17 @@ const getPublishedBlogs = async (req, res) => {
         res.sendStatus(500)
     }
 }
+/*!!! IMPORTANT ADD DIFFERENTIATION BETWEEN PUBLIC AND PRIVATE BLOGS*/
+const getById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const blogById = await blogModel.getById(id)
+        if (!blogById) return res.sendStatus(404)
+        res.json(blogById)
+    } catch (err) {
+        res.sendStatus(500)
+    }
+}
 
 const getAllBlogs = async (req, res) => {
     try {
@@ -47,4 +58,4 @@ const deleteBlog = async (req, res) => {
     }
 }
 
-module.exports = { getPublishedBlogs, getAllBlogs, createBlog, updateBlog, deleteBlog }
+module.exports = { getPublishedBlogs, getAllBlogs, createBlog, updateBlog, deleteBlog, getById }
