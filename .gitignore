@@ -1,0 +1,14 @@
+# Dependencies
+api/node_modules/
+
+# Environment variables
+production.env
+.env
+.env.*
+
+# API testing
+test.rest
+
+# OS
+.DS_Store
+Thumbs.db
