@@ -9,3 +9,11 @@ app.use('/blogs', require('./routes/blogs'))
 app.use('/admin', require('./routes/admin'))
 
 app.listen(port, () => console.log(`Server started on port ${port}`))
+
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    })
+})
