@@ -4,6 +4,7 @@ const cors = require('cors')
 const rateLimit = require('express-rate-limit')
 
 const app = express()
+app.set('trust proxy', 1)
 const port = process.env.PORT || 8080
 //middleware
 app.use(helmet())
