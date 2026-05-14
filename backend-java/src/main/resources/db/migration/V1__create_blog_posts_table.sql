@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISSTS blog_posts (
+CREATE TABLE IF NOT EXISTS blog_posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     slug VARCHAR(255) NOT NULL UNIQUE,
     title VARCHAR(255) NOT NULL,
