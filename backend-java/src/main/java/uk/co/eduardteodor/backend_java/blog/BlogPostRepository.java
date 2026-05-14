@@ -1,4 +1,17 @@
 package uk.co.eduardteodor.backend_java.blog;
 
-public class BlogPostRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface BlogPostRepository extends JpaRepository<BlogPost, UUID>{
+    List<BlogPost> findByPublishedTrue();
+
+    Optional<BlogPost> findBySlug(String slug);
+
+    List<BlogPost> findTop3ByPublishedTrueOrderByPublishedAtDesc();
 }
