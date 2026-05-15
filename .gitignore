@@ -12,3 +12,6 @@ test.rest
 # OS
 .DS_Store
 Thumbs.db
+
+# VSCODE
+.vscode/
