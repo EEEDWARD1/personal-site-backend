@@ -30,6 +30,10 @@ public class ProjectService {
         return projectRepository.findTop3ByFeaturedTrueAndPublishedTrue();
     }
 
+    public Optional<Project> getProjectById(UUID id) {
+        return projectRepository.findById(id);
+    }
+
     //-----------------------------------
     //Admin - ONLY ADMIN CAN ACCESS THIS
     //-----------------------------------
