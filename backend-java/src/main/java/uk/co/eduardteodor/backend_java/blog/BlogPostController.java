@@ -28,7 +28,9 @@ public class BlogPostController {
 
     @GetMapping("/blog/{slug}")
     public ResponseEntity<BlogPost> getPostBySlug(@PathVariable String slug) {
-        return blogPostService.getPostBySlug(slug).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return blogPostService.getPostBySlug(slug).
+                map(ResponseEntity::ok).
+                orElse(ResponseEntity.notFound().build());
     }
 
     // ADMIN ENDPOINTS
