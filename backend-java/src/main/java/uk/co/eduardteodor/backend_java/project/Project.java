@@ -54,11 +54,11 @@ public class Project {
     public String getTechStack() {return techStack;}
     public void setTechStack(String techStack) {this.techStack = techStack;}
 
-    public String getGithubURL() {return githubUrl;}
-    public void setGithubURL(String githubURL) {this.githubUrl = githubURL;}
+    public String getGithubUrl() {return githubUrl;}
+    public void setGithubUrl(String githubURL) {this.githubUrl = githubURL;}
 
-    public String getLiveURL() {return liveUrl;}
-    public void setLiveURL(String liveURL) {this.liveUrl = liveURL;}
+    public String getLiveUrl() {return liveUrl;}
+    public void setLiveUrl(String liveURL) {this.liveUrl = liveURL;}
 
     public String getStatus() {return status;}
     public void setStatus(String status) {this.status = status;}
