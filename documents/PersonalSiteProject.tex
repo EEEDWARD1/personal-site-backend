@@ -1,0 +1,427 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% --- Standard A4 Page & Margins ---
+\usepackage[a4paper, margin=2.5cm, bottom=3.2cm]{geometry}
+
+% --- Modern UI Fonts ---
+\usepackage{helvet}               % Main document font (Helvetica / Sans-Serif)
+\renewcommand{\familydefault}{\sfdefault} 
+\usepackage{inconsolata}          % The Consolas font clone
+\usepackage{amssymb}              % Provides the math arrows
+
+% --- Customizing Sections & Automatic Page Breaks Safely ---
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+% --- Package for Customizing Lists ---
+\usepackage{enumitem}
+
+% --- Table Package ---
+\usepackage{xcolor}
+\usepackage{tabularray}
+
+% --- Code Highlighting ---
+\usepackage{listings}
+
+\definecolor{codebg}{rgb}{0.97, 0.97, 0.98}
+\definecolor{keywordblue}{rgb}{0.0, 0.2, 0.6}
+\definecolor{commentgray}{rgb}{0.4, 0.4, 0.4}
+\definecolor{stringgreen}{rgb}{0.1, 0.5, 0.2}
+
+\lstset{
+	backgroundcolor=\color{codebg},
+	basicstyle=\ttfamily\footnotesize\color{black},
+	commentstyle=\color{commentgray}\itshape,
+	keywordstyle=\color{keywordblue}\bfseries,
+	stringstyle=\color{stringgreen},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	breaklines=true, 
+	frame=single,
+	rulecolor=\color{gray!20}
+}
+
+% --- Custom Footers and Headers Package ---
+\usepackage{fancyhdr}
+\usepackage{hyperref} 
+
+\pagestyle{fancy}
+\fancyhf{} 
+\renewcommand{\headrulewidth}{0pt}  
+\renewcommand{\footrulewidth}{0.4pt} 
+
+% Left Footer: Author Name & Project Date
+\lfoot{\footnotesize Eduard Teodor -- May 2026}
+\cfoot{}
+% Right Footer: Page Number | Clean, Safe Length Clickable Link
+\rfoot{\footnotesize Page \thepage \quad|\quad \href{https://github.com/EEEDWARD1/personal-site-backend}{GitHub Repository}}
+
+% Overriding standard 'plain' layout rule (used by Table of Contents pages)
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\lfoot{\footnotesize Eduard Teodor -- May 2026}
+	\cfoot{}
+	\rfoot{\footnotesize Page \thepage \quad|\quad \href{https://github.com/EEEDWARD1/personal-site-backend}{GitHub Repository}}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
+% --- Custom Reusable API Table Format ---
+\newenvironment{apitable}{
+	\noindent
+	\begin{tblr}{
+			width = \textwidth,              
+			colspec = {
+				l                            
+				Q[l, font=\ttfamily]         
+				l                            
+				X[2.5, l]                    
+				X[2, l, font=\ttfamily]      
+			}, 
+			cells = {valign=m},              
+			row{1} = {bg=black!85, fg=white, font=\bfseries}, 
+			hlines = {gray!30, 0.5pt},       
+			vlines = {gray!30, 0.5pt}, 
+			rowsep = {7pt}, colsep = {6pt},  
+		}
+		Method & Route & Auth & Description & Response \\
+	}{
+	\end{tblr}
+	\vspace{0.3cm} 
+}
+
+% --- Custom Abstract Styling Environment ---
+\newenvironment{projectabstract}{
+	\begin{center}
+		{\bfseries\large Abstract}\vspace{-.5em}
+	\end{center}
+	\list{}{
+		\setlength{\leftmargin}{1.0cm} 
+		\setlength{\rightmargin}{1.0cm} 
+	}
+	\item\relax\itshape 
+}{
+	\endlist
+	\vspace{1.5cm} 
+}
+
+% --- Custom Command Definitions ---
+\newcommand{\architectureflow}[1]{
+	\vspace{0.2em}                  
+	\begin{center}
+		{\ttfamily #1}      
+	\end{center}
+	\vspace{0.2em}                  
+}
+
+\newcommand{\entry}[2]{\item \textbf{#1} -- #2}
+
+
+% ==========================================
+% DOCUMENT CONTENT BEGINS HERE
+% ==========================================
+\begin{document}
+	
+	\renewcommand{\contentsname}{Table of Contents}
+	\tableofcontents
+	
+	\clearpage
+	
+	\begin{projectabstract}
+		This document details the architectural blueprint for a REST API back-end supporting a personal portfolio website. Built using Java Spring Boot and PostgreSQL, the API serves dynamic content to a decoupled Next.js front-end hosted on Netlify providing public read access to portfolio items while securing admin management features.
+	\end{projectabstract}
+	
+	% --- AI Declaration Section ---
+	\section*{AI Use Declaration}
+	\addcontentsline{toc}{section}{AI Use Declaration} 
+	To remain integral, Generative Artificial Intelligence (Gemini) was utilised to assist in drafting this Project Document. AI assistance was strictly used for:
+	\begin{itemize}
+		\item Structuring and formatting technical constraints, functional requirements, and sprint milestones into clean compiled \LaTeX.
+		\item Optimising the PostgreSQL DDL schema syntax and relational mapping design.
+		\item Refining descriptions within the technical roadmap.
+	\end{itemize}
+	The architectural decision, tech stack selection, API endpoints definitions, and database relationships were created and designed by the Author (Eduard Teodor).
+	
+	\vspace{1cm}
+	
+	% --- Project Overview ---
+	\section{Project Purpose}
+	The primary purpose of this system is to provide a centralised, self-hosted Content Management System. By decoupling the back-end from the front-end presentation layer, the architecture ensures high availability, static generation capabilities on the client side via Next.js, and robust security for data modification.
+	
+	\subsection{Context \& Scope boundaries}
+	The scope of this initial development phase includes user authentication, blog post publishing workflows (including draft and starred sorting behaviors), project showcase management with featured priorities, and historical freelance engagement tracking. External integrations are strictly limited to the Netlify front-end origin.
+	
+	\subsection{Tech Stack}
+	\begin{itemize}
+		\entry{Java \& Spring}{Java 25.0.3, Spring Boot 4.0.6}
+		\entry{PostgreSQL}{PostgreSQL 16.0}
+		\entry{Gradle}{Kotlin DSL, Build Tool}
+		\entry{Docker}{Containerization}
+	\end{itemize}
+	
+	\subsection{Architecture Overview}
+	The system will follow a three-tier architecture with a feature-based package structure:
+	
+	\architectureflow{Next.js (Netlify) $\rightarrow$ Spring Boot API $\rightarrow$ PostgreSQL}
+	
+	% --- Functional Requirements ---
+	\section{Functional Requirements}
+	The following requirements define what the system must do:
+	\subsection{Blog Posts}
+	
+	\begin{enumerate}[label=\textbf{FR-\arabic*:}, leftmargin=2cm, itemsep=0.2em]
+		\item The system shall allow an admin to create blog posts
+		\item The system shall allow an admin to update an existing blog posts
+		\item The system shall allow an admin to delete blog posts
+		\item The system shall allow an admin to view all posts including drafts
+		\item The system shall allow an admin to star a blog
+		\item The system shall display only published posts to public users
+		\item The system shall allow public users to retrieve a post by its URL slug
+		\item The system shall return the 3 most recently published posts for the homepage
+		\item The system shall return starred blogs in front of 3 most recently published posts for the homepage
+	\end{enumerate}
+	
+	\subsection{Projects}
+	\begin{enumerate}[label=\textbf{FR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item The system shall allow an admin to create, update, and delete projects
+		\item The system shall display only published projects to public users
+		\item The system shall allow filtering projects by featured status
+		\item The system shall return the top 3 featured projects for the homepage
+		\item The system shall allow retrieving a single project by UUID
+	\end{enumerate}
+	
+	\subsection{Freelance work}
+	\begin{enumerate}[label=\textbf{FR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item The system shall allow an admin to create, update, and delete freelance work entries
+		\item The system shall display only published freelance entries to public users
+		\item The system shall support optional client testimonials per entry
+	\end{enumerate}
+	
+	\subsection{Authentication}
+	\begin{enumerate}[label=\textbf{FR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item The system shall provide a login endpoint that returns a JWT token
+		\item The system shall validate JWT tokens on all admin requests
+		\item The System shall reject unauthenticated requests to admin routes with 401
+	\end{enumerate}
+	
+	% --- NON FUNCTIONAL REQUIREMENTS ---
+	\section{Non-Functional Requirements}
+	\subsection{Security}
+	\begin{enumerate}[label=\textbf{NFR-\arabic*:}, leftmargin=2cm, itemsep=0.2em]
+		\item All admin routes must require a valid JWT token
+		\item JWT tokens must expire after a defined period
+		\item Passwords must be stored as bcrypt hashes, never plaintext
+		\item CORS must only permit requests from the Netlify frontend origin
+		\item CSRF protection disabled (stateless JWT architecture)
+	\end{enumerate}
+	
+	\subsection{Performance}
+	\begin{enumerate}[label=\textbf{NFR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item Public API endpoints must respond within 200ms under normal load
+		\item Database queries must use indexes on frequently queried columns
+	\end{enumerate}
+	
+	\subsection{Reliability}
+	\begin{enumerate}[label=\textbf{NFR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item Database schema changes must be managed exclusively through Flyway
+		\item The application must log errors with sufficient detail for debugging
+		\item The API must return meaningful HTTP status codes on all responses
+	\end{enumerate}
+	
+	\subsection{Maintainability}
+	\begin{enumerate}[label=\textbf{NFR-\arabic*:}, leftmargin=2cm, itemsep=0.2em, resume]
+		\item Code must follow feature-based package structure
+		\item Each feature must have its own controller, service, and repository layer
+		\item No business logic in controllers; controllers delegate to services only
+	\end{enumerate}
+	
+	% --- API SECTION ---	
+	\section{API Specification}
+	This section outlines the preliminary endpoints for the system's REST API. The route matrix is made of domain feature boundaries and explicitly states the authentication mechanisms required for resource access. Public endpoints require no authorisation token, while administrative endpoints and data access routes require a valid JSON Web Token.
+	
+	\subsection{Authentication --- Public}
+	\begin{apitable}
+		POST & /api/auth/login & None & Authenticates admin credentials and returns a signed JWT access token & 200 TokenResponse / 401 Unauthorized \\
+	\end{apitable}
+	
+	\subsection{Blog Posts --- Public}
+	\begin{apitable}
+		GET & /api/blog & None & Retrieves all published blog posts & 200 List\textless{}BlogPost\textgreater{} \\
+		GET & /api/blog/homepage & None & Returns the top 3 homepage posts (starred posts sorted first, followed by the most recently published) & 200 List\textless{}BlogPost\textgreater{} \\
+		GET & /api/blog/\{slug\} & None & Retrieves a single published blog post by its unique URL slug & 200 BlogPost / 404 Not Found \\
+	\end{apitable}
+	
+	\subsection{Blog Posts --- Admin}
+	\begin{apitable}
+		GET & /api/admin/blog & JWT & Retrieves all blog posts from the database, including unpublished drafts & 200 List\textless{}BlogPost\textgreater{} / 401 Unauthorized \\
+		POST & /api/admin/blog & JWT & Creates a new blog post entry (can be saved as draft or published) & 201 BlogPost / 400 Bad Request / 401 Unauthorized \\
+		PUT & /api/admin/blog/\{uuid\} & JWT & Updates the title, content, slug, or publication status of an existing post & 200 BlogPost / 404 Not Found / 401 Unauthorized \\
+		DELETE & /api/admin/blog/\{uuid\} & JWT & Permanently removes a blog post entry from the database & 204 No Content / 404 Not Found / 401 Unauthorized \\
+		PATCH & /api/admin/blog/\{uuid\}/star & JWT & Toggles the structural starred flag status of the specified blog post & 200 BlogPost / 404 Not Found / 401 Unauthorized \\
+	\end{apitable}
+	
+	\subsection{Projects --- Public}
+	\begin{apitable}
+		GET & /api/projects & None & Retrieves all published projects (supports optional filter parameter ?featured=true) & 200 List\textless{}Project\textgreater{} \\
+		GET & /api/projects/homepage & None & Retrieves exactly the top 3 featured portfolio projects for the landing page showcase & 200 List\textless{}Project\textgreater{} \\
+		GET & /api/projects/\{uuid\} & None & Retrieves a single published portfolio project using its unique UUID identifier & 200 Project / 404 Not Found \\
+	\end{apitable}
+	
+	\subsection{Projects --- Admin}
+	\begin{apitable}
+		POST & /api/admin/projects & JWT & Creates a new portfolio showcase project entry & 201 Project / 400 Bad Request / 401 Unauthorized \\
+		PUT & /api/admin/projects/\{uuid\} & JWT & Modifies text field attributes, stack data, or status flags of an existing project & 200 Project / 404 Not Found / 401 Unauthorized \\
+		DELETE & /api/admin/projects/\{uuid\} & JWT & Erases an existing portfolio showcase project entry from the persistent database & 204 No Content / 404 Not Found / 401 Unauthorized \\
+	\end{apitable}
+	
+	\subsection{Freelance Work --- Public}
+	\begin{apitable}
+		GET & /api/freelance & None & Retrieves all published freelance history records, embedding client testimonials where available & 200 List\textless{}FreelanceEntry\textgreater{} \\
+	\end{apitable}
+	
+	\subsection{Freelance Work --- Admin}
+	\begin{apitable}
+		POST & /api/admin/freelance & JWT & Logs a new freelance project contract block with optional client testimonial metrics & 201 FreelanceEntry / 400 Bad Request / 401 Unauthorized \\
+		PUT & /api/admin/freelance/\{uuid\} & JWT & Updates descriptive entries, client details, or attached testimonial references & 200 FreelanceEntry / 404 Not Found / 401 Unauthorized \\
+		DELETE & /api/admin/freelance/\{uuid\} & JWT & Purges a specific freelance transaction log out of the persistent repository & 204 No Content / 404 Not Found / 401 Unauthorized \\
+	\end{apitable}
+	
+	% --- DATABASE SCHEMA DESIGN ---
+	\section{Database Schema Design}
+	All schema changes are managed exclusively through Flyway versioned migrations. To maintain data integrity and accountability, every piece of content created in the application is tied back directly to the sole authenticating admin user created in the master user entity.
+	
+	\subsection{Flyway Migration Scripts Structure}
+	Migrations are structured sequentially using Flyway naming standards within the workspace repository directory \texttt{src/main/resources/db/migration/}:
+	\begin{itemize}
+		\entry{V1\_\_create\_users\_table.sql}{Initializes the security credentials layout and seeds the initial sole admin user account row.}
+		\entry{V2\_\_create\_blog\_posts\_table.sql}{Establishes core data modeling for published content and draft logs, bound to a user ID creator.}
+		\entry{V3\_\_create\_projects\_table.sql}{Establishes structures for portfolio showcases, tracking featured priorities and metadata flags.}
+		\entry{V4\_\_create\_freelance\_table.sql}{Handles freelance engagement archiving along with attached optional client text feedback metrics.}
+	\end{itemize}
+	
+	\subsection{DDL Schema Definition}
+	The following PostgreSQL-compliant scripts represent the preliminary database design and baseline production architecture:
+	
+	\subsubsection{V1\_\_create\_users\_table.sql}
+	\begin{lstlisting}[language=SQL]
+		CREATE TABLE IF NOT EXISTS users (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		username VARCHAR(100) NOT NULL UNIQUE,
+		password_hash VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP DEFAULT NOW()
+		);
+	\end{lstlisting}
+	\subsubsection{V2\_\_create\_blog\_posts\_table.sql}
+	\begin{lstlisting}[language=SQL]
+		CREATE TABLE IF NOT EXISTS blog_posts (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		user_id UUID NOT NULL REFERENCES users(id),
+		slug VARCHAR(255) NOT NULL UNIQUE,
+		title VARCHAR(255) NOT NULL,
+		content TEXT NOT NULL,
+		excerpt VARCHAR(500),
+		starred BOOLEAN DEFAULT false,
+		published BOOLEAN DEFAULT false,
+		published_at TIMESTAMP,
+		created_at TIMESTAMP DEFAULT NOW(),
+		updated_at TIMESTAMP DEFAULT NOW()
+		);
+		
+		CREATE INDEX idx_blog_posts_slug ON blog_posts(slug);
+		CREATE INDEX idx_blog_posts_published ON blog_posts(published);
+		CREATE INDEX idx_blog_posts_starred ON blog_posts(starred);
+		CREATE INDEX idx_blog_posts_published_at ON blog_posts(published_at DESC);
+	\end{lstlisting}
+	\subsubsection{V3\_\_create\_projects\_table.sql}
+	\begin{lstlisting}[language=SQL]
+		CREATE TABLE IF NOT EXISTS projects (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		user_id UUID NOT NULL REFERENCES users(id),
+		title VARCHAR(255) NOT NULL,
+		description TEXT NOT NULL,
+		summary VARCHAR(500),
+		tech_stack TEXT,
+		github_url VARCHAR(500),
+		live_url VARCHAR(500),
+		status VARCHAR(50),
+		featured BOOLEAN DEFAULT false,
+		published BOOLEAN DEFAULT false,
+		created_at TIMESTAMP DEFAULT NOW(),
+		updated_at TIMESTAMP DEFAULT NOW()
+		);
+		
+		CREATE INDEX idx_projects_published ON projects(published);
+		CREATE INDEX idx_projects_featured ON projects(featured);
+	\end{lstlisting}
+	\subsubsection{V4\_\_create\_freelance\_table.sql}
+	\begin{lstlisting}[language=SQL]
+		CREATE TABLE IF NOT EXISTS freelance_work (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		user_id UUID NOT NULL REFERENCES users(id),
+		client_name VARCHAR(255),
+		project_title VARCHAR(255) NOT NULL,
+		description TEXT NOT NULL,
+		services TEXT,
+		testimonial TEXT,
+		website_url VARCHAR(500),
+		featured BOOLEAN DEFAULT false,
+		published BOOLEAN DEFAULT false,
+		completed_at TIMESTAMP,
+		created_at TIMESTAMP DEFAULT NOW(),
+		updated_at TIMESTAMP DEFAULT NOW()
+		);
+		
+		CREATE INDEX idx_freelance_published ON freelance_work(published);
+		CREATE INDEX idx_freelance_featured ON freelance_work(featured);
+	\end{lstlisting}
+	
+	% --- DEVELOPMENT PLAN ---
+	\section{Development Plan}
+	This development roadmap outlines the iterative delivery sequence of the portfolio API. Each sprint maps explicitly to specific Functional Requirements (\textbf{FR}) and Non-Functional Requirements (\textbf{NFR}) to ensure full architecture traceability.
+	
+	\subsection{Sprint 1: System Foundation \& Core Database (Database \& Structure)}
+	\begin{itemize}
+		\entry{Status}{Completed}
+		\entry{Deliverables}{
+			Project scaffolding setup with Java 25 and Spring Boot 4.0.6. Initialisation of local Docker runtime containers. Configuration of versioned Flyway schema scripts (\texttt{V1} through \texttt{V4}) to build tables with proper tracking indices.
+		}
+		\entry{Traceability}{
+			Covers architectural design choices, \textbf{NFR-6} (Database indexing), \textbf{NFR-8} (Flyway execution engine), and \textbf{NFR-11} / \textbf{NFR-12} (Feature-based package layering).
+		}
+	\end{itemize}
+	
+	\subsection{Sprint 2: Resource Engines \& Public Access (Public Features)}
+	\begin{itemize}
+		\entry{Status}{In Progress}
+		\entry{Deliverables}{
+			Development of read-only business logic engines, repository querying interfaces, and controller endpoints. This includes specialized homepage sorting algorithms to prioritize starred blogs and handle project/freelance data mapping payloads.
+		}
+		\entry{Traceability}{
+			Covers \textbf{FR-6} to \textbf{FR-9} (Public blog features), \textbf{FR-11} to \textbf{FR-14} (Public projects), \textbf{FR-16} (Public freelance listings), \textbf{NFR-7} (Under 200ms API response benchmark), and \textbf{NFR-13} (No business logic inside controllers).
+		}
+	\end{itemize}
+	
+	\subsection{Sprint 3: AAA Security Layer \& Protected Management (Admin Control)}
+	\begin{itemize}
+		\entry{Status}{Planned}
+		\entry{Deliverables}{
+			Integration of the Spring Security filter chain. Setup of custom filters to validate stateless incoming user authentication payloads. Implement administrative endpoints allowing full secure modification operations (Create, Update, Delete, Patch) across resources.
+		}
+		\entry{Traceability}{
+			Covers \textbf{FR-1} to \textbf{FR-5} (Admin blog control), \textbf{FR-10} (Admin project modifications), \textbf{FR-15} (Admin freelance control), \textbf{FR-17} to \textbf{FR-19} (JWT core actions), \textbf{NFR-1} / \textbf{NFR-2} (Stateless JWT token handling), \textbf{NFR-3} (BCrypt password salting), and \textbf{NFR-5} (CSRF bypass safety).
+		}
+	\end{itemize}
+	
+	\subsection{Sprint 4: Hardening, DevOps, \& Production Infrastructure}
+	\begin{itemize}
+		\entry{Status}{Planned}
+		\entry{Deliverables}{
+			Securing network access controls by applying CORS restrictions to isolate outside consumption. Implementing global exception interceptors to enforce error output standards, finalizing containerized build variants, configuring application variables, and setting up persistent debugging logs.
+		}
+		\entry{Traceability}{
+			Covers \textbf{NFR-4} (Cross-Origin restricted Netlify whitelisting), \textbf{NFR-9} (Verbose logging for system exceptions), and \textbf{NFR-10} (Standard HTTP Response payload mapping).
+		}
+	\end{itemize}
+	
+\end{document}
