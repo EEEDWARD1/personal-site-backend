@@ -11,6 +11,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
+
     @Column(nullable = false, unique = true)
     private String title;
 
@@ -34,13 +37,19 @@ public class Project {
 
     private boolean published;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Project() {}
 
     public UUID getId() {return id;}
     public void setId(UUID id) {this.id = id;}
+
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
 
     public String getTitle() {return title;}
     public void setTitle(String title) {this.title = title;}
