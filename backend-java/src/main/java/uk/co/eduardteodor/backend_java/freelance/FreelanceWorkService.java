@@ -13,7 +13,7 @@ public class FreelanceWorkService {
         this.freelanceWorkRepository = freelanceWorkRepository;
     }
 
-    public List<FreelanceWork> getALlPublishedFreelanceWork() {
+    public List<FreelanceWork> getAllPublishedFreelanceWork() {
         return freelanceWorkRepository.findByPublishedTrue();
     }
 }
