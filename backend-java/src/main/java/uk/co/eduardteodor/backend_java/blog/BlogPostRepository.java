@@ -10,10 +10,13 @@ import java.util.UUID;
 
 @Repository
 public interface BlogPostRepository extends JpaRepository<BlogPost, UUID>{
+
+    //Public Endpoints
     List<BlogPost> findByPublishedTrue();
 
     Optional<BlogPost> findBySlugAndPublishedTrue(String slug);
 
     @Query("SELECT b FROM BlogPost b WHERE b.published = true ORDER BY b.starred DESC, b.publishedAt DESC LIMIT 3")
     List<BlogPost> findHomepagePosts();
+
 }
