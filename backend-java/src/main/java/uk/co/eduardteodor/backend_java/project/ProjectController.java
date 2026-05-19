@@ -27,10 +27,39 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{uuid}")
-    public ResponseEntity<Project> getProject(@PathVariable UUID uuid) {
+    public ResponseEntity<Project> getPublishedProject(@PathVariable UUID uuid) {
+        return projectService.getPublishedProjectById(uuid)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    //Admin Endpoints
+    @GetMapping("/admin/projects")
+    public List<Project> getAllProjects() {
+        return projectService.getAllProjects();
+    }
+
+    @GetMapping("/admin/projects/{uuid}")
+    public ResponseEntity<Project> getProjectById(@PathVariable UUID uuid) {
         return projectService.getProjectById(uuid)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/admin/projects")
+    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+        return ResponseEntity.status(201).body(projectService.createProject(project));
+    }
+
+    @PutMapping("/admin/projects/{uuid}")
+    public Project updateProject(@PathVariable UUID uuid, @RequestBody Project project) {
+        return projectService.updateProject(uuid, project);
+    }
+
+    @DeleteMapping("/admin/projects/{uuid}")
+    public ResponseEntity<Void> deletePost(@PathVariable UUID uuid) {
+        projectService.deleteProject(uuid);
+        return ResponseEntity.noContent().build();
     }
 
 }
