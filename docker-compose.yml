@@ -12,11 +12,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       # - ./database/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
+    #ports:
+    #  - "5432:5432"
 
-  api:
-    build: ./api
+  backend:
+    build: 
+      context: ./backend-java
+      dockerfile: Dockerfile
     container_name: personalsite_api
     ports:
       - "8080:8080"
