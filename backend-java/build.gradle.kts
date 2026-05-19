@@ -18,6 +18,10 @@ repositories {
 }
 
 dependencies {
+	implementation(platform("io.jsonwebtoken:jjwt-bom:0.13.0"))
+	implementation("io.jsonwebtoken:jjwt-api")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
