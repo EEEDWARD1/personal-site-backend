@@ -7,3 +7,7 @@ spring:
     password: ${DB_PASSWORD}
   flyway:
     enabled: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
