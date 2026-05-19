@@ -76,4 +76,15 @@ public class JwtUtil {
             return false;
         }
     }
+
+    // Short lived pre-auth token - 5 minutes only
+    public String generatePreAuthToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("type", "pre-auth")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 300000)) // 5 minutes
+                .signWith(getSigningKey())
+                .compact();
+    }
 }
