@@ -18,6 +18,10 @@ repositories {
 }
 
 dependencies {
+	implementation("dev.samstevens.totp:totp-spring-boot-starter:1.7.1")
+	implementation("com.google.zxing:core:3.5.3")
+	implementation("com.google.zxing:javase:3.5.3")
+
 	implementation(platform("io.jsonwebtoken:jjwt-bom:0.13.0"))
 	implementation("io.jsonwebtoken:jjwt-api")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl")
