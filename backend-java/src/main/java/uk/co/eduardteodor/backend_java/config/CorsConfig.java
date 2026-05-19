@@ -16,7 +16,12 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Only allow requests from your frontend
-        config.setAllowedOrigins(List.of("https://eduardteodor.co.uk"));
+        config.setAllowedOrigins(List.of(
+                "https://eduardteodor.co.uk",
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://127.0.0.1:3000"
+        ));
 
         // Allow all standard HTTP methods
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
