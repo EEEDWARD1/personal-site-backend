@@ -1,6 +1,9 @@
 package uk.co.eduardteodor.backend_java.project;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import uk.co.eduardteodor.backend_java.user.User;
+import uk.co.eduardteodor.backend_java.user.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +12,11 @@ import java.util.UUID;
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
     // PUBLIC
@@ -37,6 +42,10 @@ public class ProjectService {
     }
 
     public Project createProject(Project project) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        project.setUserId(user.getId());
         return projectRepository.save(project);
     }
 

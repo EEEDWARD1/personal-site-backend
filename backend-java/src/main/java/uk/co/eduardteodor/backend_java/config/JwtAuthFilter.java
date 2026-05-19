@@ -42,6 +42,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Expected format: "Bearer eyJ..."
         String authHeader = request.getHeader("Authorization");
 
+        System.out.println("=== JWT FILTER ===");
+        System.out.println("Method: " + request.getMethod());
+        System.out.println("URI: " + request.getRequestURI());
+        System.out.println("Auth Header: " + authHeader);
+
+
         // Step 2: If no header or wrong format, skip auth and continue as unauthenticated
         // Public routes will still work, protected routes will be blocked by SecurityConfig
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -51,6 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Step 3: Strip "Bearer " prefix to get the raw token string
         String token = authHeader.substring(7);
+        System.out.println("Token valid: " + jwtUtil.isTokenValid(token));
 
         // Step 4: Ask JwtUtil to validate the token — checks signature and expiry
         // If invalid or expired, let request through unauthenticated
@@ -61,7 +68,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Step 5: Token is valid, extract the username embedded inside it
         String username = jwtUtil.extractUsername(token);
-
         // Step 6: Only authenticate if username exists and request isn't already authenticated
         // Prevents double authentication on the same request
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

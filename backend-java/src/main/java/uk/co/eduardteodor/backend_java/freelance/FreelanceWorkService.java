@@ -1,6 +1,9 @@
 package uk.co.eduardteodor.backend_java.freelance;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import uk.co.eduardteodor.backend_java.user.User;
+import uk.co.eduardteodor.backend_java.user.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,10 +12,12 @@ import java.util.UUID;
 @Service
 public class FreelanceWorkService {
     private final FreelanceWorkRepository freelanceWorkRepository;
+    private final UserRepository userRepository;
 
     // Public
-    public FreelanceWorkService(FreelanceWorkRepository freelanceWorkRepository) {
+    public FreelanceWorkService(FreelanceWorkRepository freelanceWorkRepository, UserRepository userRepository) {
         this.freelanceWorkRepository = freelanceWorkRepository;
+        this.userRepository = userRepository;
     }
 
     public List<FreelanceWork> getAllPublishedFreelanceWork() {
@@ -29,6 +34,12 @@ public class FreelanceWorkService {
     }
 
     public FreelanceWork createFreelanceWork(FreelanceWork freelanceWork) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        freelanceWork.setUserId(user.getId());
         return freelanceWorkRepository.save(freelanceWork);
     }
 

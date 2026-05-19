@@ -1,6 +1,9 @@
 package uk.co.eduardteodor.backend_java.blog;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import uk.co.eduardteodor.backend_java.user.User;
+import uk.co.eduardteodor.backend_java.user.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +12,11 @@ import java.util.UUID;
 @Service
 public class BlogPostService {
     private final BlogPostRepository blogPostRepository;
+    private final UserRepository userRepository;
 
-    public BlogPostService(BlogPostRepository blogPostRepository) {
+    public BlogPostService(BlogPostRepository blogPostRepository, UserRepository userRepository) {
         this.blogPostRepository = blogPostRepository;
+        this.userRepository = userRepository;
     }
 
     // Public
@@ -33,6 +38,15 @@ public class BlogPostService {
     }
 
     public BlogPost createPost(BlogPost blogPost) {
+        // Get the authenticated user's username from security context
+        String username = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        // Look up the user to get their UUID
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        blogPost.setUserId(user.getId());
         return blogPostRepository.save(blogPost);
     }
 
