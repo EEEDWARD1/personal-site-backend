@@ -18,6 +18,7 @@ public class CorsConfig {
         // Only allow requests from your frontend
         config.setAllowedOrigins(List.of(
                 "https://eduardteodor.co.uk",
+                "https://www.eduardteodor.co.uk",
                 "http://localhost:3000",
                 "http://localhost:3001",
                 "http://127.0.0.1:3000"
@@ -26,8 +27,9 @@ public class CorsConfig {
         // Allow all standard HTTP methods
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
-        // Allow Authorization header for JWT
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Allow browser preflight requests for JSON and JWT-backed admin calls
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization"));
 
         // Allow credentials (cookies/auth headers)
         config.setAllowCredentials(true);

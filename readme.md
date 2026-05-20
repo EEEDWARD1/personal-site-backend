@@ -6,7 +6,7 @@ Production-ready Docker Compose setup for exposing the backend API at:
 https://api.eduardteodor.co.uk
 ```
 
-The backend listens only on Docker's private network at `http://backend:8000`.
+The Java backend listens only on Docker's private network at `http://backend:8000`.
 No backend ports are published to the host. Cloudflare Tunnel is the only public
 entry point.
 
@@ -25,7 +25,7 @@ Cloudflare, so no ports need to be opened on the firewall or router.
 
 ## Files
 
-- `docker-compose.yml` - Cloudflare Tunnel plus an internal example backend.
+- `docker-compose.yml` - Cloudflare Tunnel plus the internal Java backend.
 - `.env.example` - Template for the tunnel token.
 - `.gitignore` - Excludes environment files, Cloudflare credentials, and local secrets.
 - `config.yml` - Optional ingress reference for locally managed tunnels.
@@ -161,7 +161,7 @@ curl -i https://api.eduardteodor.co.uk/health
 Test the backend from inside the tunnel container:
 
 ```bash
-docker compose exec backend node -e "fetch('http://127.0.0.1:8000/health').then(async r=>{console.log(r.status, await r.text()); process.exit(r.ok?0:1)}).catch(e=>{console.error(e); process.exit(1)})"
+docker compose exec backend wget -qO- http://127.0.0.1:8000/health
 ```
 
 If you need deeper Docker DNS debugging, temporarily attach a debug container to
@@ -187,11 +187,10 @@ All services:
 docker compose logs -f
 ```
 
-## Replacing the example backend
+## Backend service
 
-The Compose file includes a minimal Node.js API example listening on port `8000`.
-For your real API, replace the `backend` service with your production image or
-build configuration, but keep:
+The Compose file builds the Spring Boot API from `backend-java` and runs it on
+port `8000` inside Docker so the Cloudflare Tunnel route can stay stable. Keep:
 
 - Service name: `backend`
 - Internal listening port: `8000`

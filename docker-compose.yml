@@ -5,28 +5,19 @@
 # the cloudflared connector.
 services:
   backend:
-    image: node:22-alpine
+    build:
+      context: ./backend-java
+      dockerfile: dockerfile
     container_name: personal-site-api
     restart: unless-stopped
-    working_dir: /app
     environment:
-      NODE_ENV: production
-      PORT: 8000
-    # Example internal-only Node.js/Express-compatible API. Replace this service
-    # with your real backend image/build while keeping service name "backend" and
-    # port 8000 so the tunnel route remains http://backend:8000.
-    command:
-      - sh
-      - -c
-      - >
-        node -e "const http=require('http');
-        const port=process.env.PORT||8000;
-        const server=http.createServer((req,res)=>{
-          if(req.url==='/health'){res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({status:'ok'}));return;}
-          res.writeHead(200,{'content-type':'application/json'});
-          res.end(JSON.stringify({service:'personal-site-api',hostname:req.headers.host,path:req.url}));
-        });
-        server.listen(port,'0.0.0.0',()=>console.log('API listening on '+port));"
+      SERVER_PORT: 8000
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     expose:
       # Expose documents the internal container port for other services on the
       # Docker network. It does not publish the API to the host or internet.
@@ -35,9 +26,7 @@ services:
       test:
         - CMD-SHELL
         - >
-          node -e "fetch('http://127.0.0.1:8000/health')
-          .then(r=>process.exit(r.ok?0:1))
-          .catch(()=>process.exit(1))"
+          wget -qO- http://127.0.0.1:8000/health >/dev/null || exit 1
       interval: 30s
       timeout: 5s
       retries: 3
