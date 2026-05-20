@@ -1,36 +1,96 @@
+# Production Cloudflare Tunnel stack for api.eduardteodor.co.uk.
+#
+# The backend service is intentionally attached only to the private network and
+# does not publish Docker ports. Public traffic reaches it exclusively through
+# the cloudflared connector.
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: personalsite_db
-    restart: always
-    shm_size: 128mb
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      # - ./database/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-
   backend:
-    build: 
-      context: ./backend-java
-      dockerfile: Dockerfile
-    container_name: personalsite_api
-    ports:
-      - "8080:8080"
+    image: node:22-alpine
+    container_name: personal-site-api
+    restart: unless-stopped
+    working_dir: /app
     environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      JWT_SECRET: ${JWT_SECRET}
-    depends_on:
-      - postgres
+      NODE_ENV: production
+      PORT: 8000
+    # Example internal-only Node.js/Express-compatible API. Replace this service
+    # with your real backend image/build while keeping service name "backend" and
+    # port 8000 so the tunnel route remains http://backend:8000.
+    command:
+      - sh
+      - -c
+      - >
+        node -e "const http=require('http');
+        const port=process.env.PORT||8000;
+        const server=http.createServer((req,res)=>{
+          if(req.url==='/health'){res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({status:'ok'}));return;}
+          res.writeHead(200,{'content-type':'application/json'});
+          res.end(JSON.stringify({service:'personal-site-api',hostname:req.headers.host,path:req.url}));
+        });
+        server.listen(port,'0.0.0.0',()=>console.log('API listening on '+port));"
+    expose:
+      # Expose documents the internal container port for other services on the
+      # Docker network. It does not publish the API to the host or internet.
+      - "8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          node -e "fetch('http://127.0.0.1:8000/health')
+          .then(r=>process.exit(r.ok?0:1))
+          .catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - backend_private
 
-volumes:
-  pgdata:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: personal-site-cloudflared
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # Run parameter consumed by cloudflared. This enables /ready and /metrics
+      # without changing the token-based tunnel command below.
+      TUNNEL_METRICS: 0.0.0.0:2000
+    # The token is loaded from .env. Keep the exact tunnel command Cloudflare
+    # recommends for Docker.
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - ${TUNNEL_TOKEN}
+    # cloudflared exposes /ready on the metrics listener and returns 200 only
+    # after it has an active connection to Cloudflare's edge.
+    healthcheck:
+      test:
+        - CMD
+        - cloudflared
+        - tunnel
+        - health
+        - --ready-endpoint
+        - http://127.0.0.1:2000/ready
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    # cloudflared needs outbound internet access and private Docker DNS access
+    # to the backend service name.
+    networks:
+      - tunnel_egress
+      - backend_private
+
+networks:
+  # Normal bridge network so cloudflared can make outbound connections to
+  # Cloudflare. No inbound host ports are published.
+  tunnel_egress:
+    driver: bridge
+
+  # Internal-only network for origin traffic between cloudflared and backend.
+  backend_private:
+    driver: bridge
+    internal: true

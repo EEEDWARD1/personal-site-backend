@@ -1,0 +1,11 @@
+# Optional local Cloudflare Tunnel ingress reference.
+#
+# The Docker Compose service in this repository uses a remotely managed tunnel
+# token, so the active ingress rule should be configured in Cloudflare Zero
+# Trust. Keep this file as documentation or adapt it only if you switch to a
+# locally managed tunnel with a credentials file.
+
+ingress:
+  - hostname: api.eduardteodor.co.uk
+    service: http://backend:8000
+  - service: http_status:404

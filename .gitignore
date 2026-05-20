@@ -1,17 +1,50 @@
 # Dependencies
+node_modules/
 api/node_modules/
 
-# Environment variables
-production.env
+# Local environment and secrets
 .env
 .env.*
+!.env.example
+production.env
+*.env
+
+# Cloudflare Tunnel credentials and sensitive local config
+cert.pem
+*.pem
+*.p12
+*.key
+*.crt
+.cloudflared/
+cloudflared/
+credentials/
+tunnel-credentials/
+.cloudflared/*.json
+cloudflared/*.json
+credentials/*.json
+tunnel-credentials/*.json
+*-credentials.json
+*.credentials.json
+*.credential.json
+cloudflare-credentials.json
+cloudflared-credentials.json
+
+# Local-only tunnel config overrides
+config.local.yml
+config.local.yaml
+tunnel.local.yml
+tunnel.local.yaml
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
 
 # API testing
 test.rest
 
-# OS
+# OS and editor files
 .DS_Store
 Thumbs.db
-
-# VSCODE
 .vscode/
+.idea/
