@@ -9,12 +9,12 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <nav className="bg-gray-800 px-6 py-4">
+        <nav>
             <Card className="mx-auto flex max-w-7xl items-center justify-between">
                 
                 {/* Logo */}
                 <div className="text-xl font-bold text-black">
-                    Eduard
+                    Eduard Teodor
                 </div>
 
                 {/* Desktop Navigation */}
