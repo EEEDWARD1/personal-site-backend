@@ -1,12 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CardCollection } from "@/app/_components/card-collection";
 import {
   FreelanceCard,
   PostCard,
   ProjectCard,
 } from "@/app/_components/content-cards";
-import { EmptyState, ErrorState, SiteShell } from "@/app/_components/site-shell";
+import { SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { pageMetadata } from "@/app/_lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Practical digital systems",
+  description:
+    "Eduard Teodor is a London-based Computer Science graduate looking for work and building practical websites, admin tools, workflows, and software projects.",
+});
 
 export default async function Home() {
   const [projects, freelance, posts] = await Promise.all([
@@ -85,21 +93,16 @@ export default async function Home() {
                 See services
               </Link>
             </div>
-            {freelance.ok ? (
-              freelance.data.length ? (
-                <div className="card-grid">
-                  {freelance.data.slice(0, 3).map((item) => (
-                    <FreelanceCard key={item.slug} item={item} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="No freelance examples yet">
-                  Featured client work will appear here when it is published.
-                </EmptyState>
-              )
-            ) : (
-              <ErrorState message={freelance.message} />
-            )}
+            <CardCollection
+              state={freelance}
+              limit={3}
+              emptyTitle="No freelance examples yet"
+              renderItem={(item) => (
+                <FreelanceCard key={item.slug} item={item} />
+              )}
+            >
+              Featured client work will appear here when it is published.
+            </CardCollection>
           </div>
         </section>
 
@@ -114,22 +117,17 @@ export default async function Home() {
                 View all projects
               </Link>
             </div>
-            {projects.ok ? (
-              projects.data.length ? (
-                <div className="card-grid">
-                  {projects.data.slice(0, 3).map((project) => (
-                    <ProjectCard key={project.slug} project={project} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="No featured projects yet">
-                  Published featured projects will appear here once they are
-                  added in the admin area.
-                </EmptyState>
-              )
-            ) : (
-              <ErrorState message={projects.message} />
-            )}
+            <CardCollection
+              state={projects}
+              limit={3}
+              emptyTitle="No featured projects yet"
+              renderItem={(project) => (
+                <ProjectCard key={project.slug} project={project} />
+              )}
+            >
+              Published featured projects will appear here once they are added
+              in the admin area.
+            </CardCollection>
           </div>
         </section>
 
@@ -144,21 +142,14 @@ export default async function Home() {
                 Read notes
               </Link>
             </div>
-            {posts.ok ? (
-              posts.data.length ? (
-                <div className="card-grid">
-                  {posts.data.slice(0, 3).map((post) => (
-                    <PostCard key={post.slug} post={post} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="No notes published yet">
-                  Starred notes will appear here once they are available.
-                </EmptyState>
-              )
-            ) : (
-              <ErrorState message={posts.message} />
-            )}
+            <CardCollection
+              state={posts}
+              limit={3}
+              emptyTitle="No notes published yet"
+              renderItem={(post) => <PostCard key={post.slug} post={post} />}
+            >
+              Starred notes will appear here once they are available.
+            </CardCollection>
           </div>
         </section>
 

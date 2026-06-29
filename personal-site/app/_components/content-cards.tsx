@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type { BlogPost, FreelanceProject, Project } from "@/app/_lib/api";
+import { splitCommaList } from "@/app/_lib/format";
 
 export function ProjectCard({ project }: { project: Project }) {
+  const tools = splitCommaList(project.techStack);
+
   return (
     <Link href={`/projects/${project.slug}`} className="content-card card-link">
       <p className="eyebrow">{project.status || "Project"}</p>
@@ -9,12 +12,11 @@ export function ProjectCard({ project }: { project: Project }) {
       <p>
         {project.summary || "A practical system designed around a clear need."}
       </p>
-      {project.techStack ? (
+      {tools.length ? (
         <ul className="pill-list" aria-label="Tech stack">
-          {project.techStack.split(",").map((tool) => {
-            const label = tool.trim();
-            return label ? <li key={label}>{label}</li> : null;
-          })}
+          {tools.map((tool) => (
+            <li key={tool}>{tool}</li>
+          ))}
         </ul>
       ) : null}
       <span className="text-link card-action">Read more</span>

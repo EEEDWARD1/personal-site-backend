@@ -1,4 +1,11 @@
 import { SiteShell } from "@/app/_components/site-shell";
+import { pageMetadata } from "@/app/_lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Contact",
+  description:
+    "Contact Eduard Teodor about roles, hiring conversations, collaborations, freelance projects, or practical digital work.",
+});
 
 export default function ContactPage() {
   return (

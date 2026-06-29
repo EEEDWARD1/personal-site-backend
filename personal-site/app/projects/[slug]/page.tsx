@@ -1,13 +1,36 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ErrorState, SiteShell } from "@/app/_components/site-shell";
+import { BackLink, ErrorState, SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { splitCommaList } from "@/app/_lib/format";
+import { pageMetadata } from "@/app/_lib/metadata";
 
-export default async function ProjectDetailPage({
-  params,
-}: {
+type ProjectDetailProps = {
   params: Promise<{ slug: string }>;
-}) {
+};
+
+export async function generateMetadata({
+  params,
+}: ProjectDetailProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await publicApi.project(slug);
+
+  if (!project.ok) {
+    return pageMetadata({
+      title: "Project not found",
+      description: "The requested project could not be found.",
+    });
+  }
+
+  return pageMetadata({
+    title: project.data.title,
+    description:
+      project.data.summary ||
+      "A practical software or web project by Eduard Teodor.",
+  });
+}
+
+export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params;
   const project = await publicApi.project(slug);
 
@@ -15,12 +38,7 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
-  const tools = project.ok
-    ? project.data.techStack
-        ?.split(",")
-        .map((tool) => tool.trim())
-        .filter(Boolean) ?? []
-    : [];
+  const tools = project.ok ? splitCommaList(project.data.techStack) : [];
 
   return (
     <SiteShell>
@@ -29,19 +47,7 @@ export default async function ProjectDetailPage({
           {project.ok ? (
             <>
               <article className="detail-article">
-                <Link
-                  className="detail-back-link"
-                  href="/projects"
-                  aria-label="Back to projects"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    focusable="false"
-                  >
-                    <path d="M19 12H6m6-6-6 6 6 6" />
-                  </svg>
-                </Link>
+                <BackLink href="/projects" label="Back to projects" />
                 <p className="eyebrow">Case study</p>
                 <h1 className="page-title">{project.data.title}</h1>
                 <div className="detail-meta-panel">

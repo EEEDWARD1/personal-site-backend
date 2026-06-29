@@ -53,6 +53,22 @@ export function SiteShell({ children }: { children: ReactNode }) {
   );
 }
 
+export function BackLink({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}) {
+  return (
+    <Link className="detail-back-link" href={href} aria-label={label}>
+      <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+        <path d="M19 12H6m6-6-6 6 6 6" />
+      </svg>
+    </Link>
+  );
+}
+
 export function PageHeader({
   eyebrow,
   title,

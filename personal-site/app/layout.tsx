@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { siteDescription } from "@/app/_lib/metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Eduard Teodor | Practical digital systems",
-  description:
-    "London-based recent Computer Science graduate with an interest in building and maintaining practical digital systems.",
+  title: {
+    default: "Eduard Teodor | Practical digital systems",
+    template: "%s | Eduard Teodor",
+  },
+  description: siteDescription,
 };
 
 export default function RootLayout({

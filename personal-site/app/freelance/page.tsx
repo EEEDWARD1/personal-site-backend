@@ -1,10 +1,14 @@
+import { CardCollection } from "@/app/_components/card-collection";
 import { FreelanceCard } from "@/app/_components/content-cards";
-import {
-  EmptyState,
-  ErrorState,
-  SiteShell,
-} from "@/app/_components/site-shell";
+import { SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { pageMetadata } from "@/app/_lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Freelance",
+  description:
+    "Focused freelance help from Eduard Teodor for websites, admin tools, dashboards, hosting setup, and workflow improvements.",
+});
 
 export default async function FreelancePage() {
   const items = await publicApi.freelance();
@@ -41,21 +45,15 @@ export default async function FreelancePage() {
               <p className="eyebrow">Examples</p>
               <h2>Published freelance work.</h2>
             </div>
-            {items.ok ? (
-              items.data.length ? (
-                <div className="card-grid">
-                  {items.data.map((item) => (
-                    <FreelanceCard key={item.slug} item={item} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="No examples published yet">
-                  Freelance examples will appear here when they are available.
-                </EmptyState>
-              )
-            ) : (
-              <ErrorState message={items.message} />
-            )}
+            <CardCollection
+              state={items}
+              emptyTitle="No examples published yet"
+              renderItem={(item) => (
+                <FreelanceCard key={item.slug} item={item} />
+              )}
+            >
+              Freelance examples will appear here when they are available.
+            </CardCollection>
           </div>
         </section>
       </main>

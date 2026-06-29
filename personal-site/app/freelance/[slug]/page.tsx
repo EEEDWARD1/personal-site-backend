@@ -1,13 +1,37 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ErrorState, SiteShell } from "@/app/_components/site-shell";
+import { BackLink, ErrorState, SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { pageMetadata } from "@/app/_lib/metadata";
+
+type FreelanceDetailProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({
+  params,
+}: FreelanceDetailProps): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await publicApi.freelanceProject(slug);
+
+  if (!item.ok) {
+    return pageMetadata({
+      title: "Freelance work not found",
+      description: "The requested freelance project could not be found.",
+    });
+  }
+
+  return pageMetadata({
+    title: item.data.projectTitle,
+    description:
+      item.data.summary ||
+      "A focused freelance digital project by Eduard Teodor.",
+  });
+}
 
 export default async function FreelanceDetailPage({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+}: FreelanceDetailProps) {
   const { slug } = await params;
   const item = await publicApi.freelanceProject(slug);
 
@@ -22,19 +46,7 @@ export default async function FreelanceDetailPage({
           {item.ok ? (
             <>
               <article className="detail-article">
-                <Link
-                  className="detail-back-link"
-                  href="/freelance"
-                  aria-label="Back to freelance"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    focusable="false"
-                  >
-                    <path d="M19 12H6m6-6-6 6 6 6" />
-                  </svg>
-                </Link>
+                <BackLink href="/freelance" label="Back to freelance" />
                 <p className="eyebrow">{item.data.clientName || "Client work"}</p>
                 <h1 className="page-title">{item.data.projectTitle}</h1>
                 <div className="detail-meta-panel">

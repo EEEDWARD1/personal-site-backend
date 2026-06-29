@@ -1,11 +1,14 @@
+import { CardCollection } from "@/app/_components/card-collection";
 import { ProjectCard } from "@/app/_components/content-cards";
-import {
-  EmptyState,
-  ErrorState,
-  PageHeader,
-  SiteShell,
-} from "@/app/_components/site-shell";
+import { PageHeader, SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { pageMetadata } from "@/app/_lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Projects",
+  description:
+    "Software and web projects by Eduard Teodor, focused on practical systems that manage, publish, automate, or make workflows easier to run.",
+});
 
 export default async function ProjectsPage() {
   const projects = await publicApi.projects();
@@ -21,21 +24,15 @@ export default async function ProjectsPage() {
         </PageHeader>
         <section className="section pt-0">
           <div className="section-inner">
-            {projects.ok ? (
-              projects.data.length ? (
-                <div className="card-grid">
-                  {projects.data.map((project) => (
-                    <ProjectCard key={project.slug} project={project} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="No projects published yet">
-                  Published work will appear here once it is added.
-                </EmptyState>
-              )
-            ) : (
-              <ErrorState message={projects.message} />
-            )}
+            <CardCollection
+              state={projects}
+              emptyTitle="No projects published yet"
+              renderItem={(project) => (
+                <ProjectCard key={project.slug} project={project} />
+              )}
+            >
+              Published work will appear here once it is added.
+            </CardCollection>
           </div>
         </section>
       </main>

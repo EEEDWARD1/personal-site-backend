@@ -1,13 +1,36 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ErrorState, SiteShell } from "@/app/_components/site-shell";
+import { BackLink, ErrorState, SiteShell } from "@/app/_components/site-shell";
 import { publicApi } from "@/app/_lib/api";
+import { formatDisplayDate, splitParagraphs } from "@/app/_lib/format";
+import { pageMetadata } from "@/app/_lib/metadata";
 
-export default async function BlogPostPage({
-  params,
-}: {
+type BlogPostProps = {
   params: Promise<{ slug: string }>;
-}) {
+};
+
+export async function generateMetadata({
+  params,
+}: BlogPostProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await publicApi.post(slug);
+
+  if (!post.ok) {
+    return pageMetadata({
+      title: "Note not found",
+      description: "The requested note could not be found.",
+    });
+  }
+
+  return pageMetadata({
+    title: post.data.title,
+    description:
+      post.data.excerpt ||
+      "A note from Eduard Teodor on building and learning with software.",
+  });
+}
+
+export default async function BlogPostPage({ params }: BlogPostProps) {
   const { slug } = await params;
   const post = await publicApi.post(slug);
 
@@ -15,14 +38,9 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const publishedDate =
-    post.ok && post.data.publishedAt
-      ? new Intl.DateTimeFormat("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(post.data.publishedAt))
-      : null;
+  const publishedDate = post.ok
+    ? formatDisplayDate(post.data.publishedAt)
+    : null;
 
   return (
     <SiteShell>
@@ -30,15 +48,7 @@ export default async function BlogPostPage({
         <div className="section-inner detail-layout detail-layout-single">
           {post.ok ? (
             <article className="detail-article">
-              <Link
-                className="detail-back-link"
-                href="/blog"
-                aria-label="Back to notes"
-              >
-                <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-                  <path d="M19 12H6m6-6-6 6 6 6" />
-                </svg>
-              </Link>
+              <BackLink href="/blog" label="Back to notes" />
               <p className="eyebrow">Note</p>
               <h1 className="page-title">{post.data.title}</h1>
               <div className="detail-meta-panel">
@@ -54,11 +64,12 @@ export default async function BlogPostPage({
                 <p className="lede">{post.data.excerpt}</p>
               ) : null}
               <div className="prose body-copy">
-                {(post.data.content || "This note is being prepared.")
-                  .split(/\n{2,}/)
-                  .map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
+                {splitParagraphs(
+                  post.data.content,
+                  "This note is being prepared.",
+                ).map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
               </div>
             </article>
           ) : (

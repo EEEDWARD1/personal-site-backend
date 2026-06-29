@@ -7,5 +7,5 @@
 
 ingress:
   - hostname: api.eduardteodor.co.uk
-    service: http://backend:8000
+    service: http://api:8080
   - service: http_status:404
