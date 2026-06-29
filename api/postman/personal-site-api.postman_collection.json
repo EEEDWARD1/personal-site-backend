@@ -1,0 +1,721 @@
+{
+  "info": {
+    "_postman_id": "b6c2610d-6f14-4be0-a37c-4f9f8f6f9d19",
+    "name": "Personal Site API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Manual collection for auth, blog, projects, and freelance routes."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "username",
+      "value": "testuser"
+    },
+    {
+      "key": "password",
+      "value": "Password123!"
+    },
+    {
+      "key": "preAuthToken",
+      "value": ""
+    },
+    {
+      "key": "jwt",
+      "value": ""
+    },
+    {
+      "key": "blogPostId",
+      "value": ""
+    },
+    {
+      "key": "blogPostSlug",
+      "value": "my-first-post"
+    },
+    {
+      "key": "projectId",
+      "value": ""
+    },
+    {
+      "key": "projectSlug",
+      "value": "personal-site"
+    },
+    {
+      "key": "freelanceProjectId",
+      "value": ""
+    },
+    {
+      "key": "freelanceProjectSlug",
+      "value": "client-redesign"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Run first. Copy preAuthToken from the response into the collection variable if needed."
+          }
+        },
+        {
+          "name": "Verify TOTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preAuthToken\": \"{{preAuthToken}}\",\n  \"code\": \"<MANUAL_TOTP_CODE>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/totp/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "totp",
+                "verify"
+              ]
+            },
+            "description": "Replace <MANUAL_TOTP_CODE> with the current 6-digit code. Copy token from the response into the jwt collection variable."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Blog",
+      "item": [
+        {
+          "name": "List Blog Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "posts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Starred Blog Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/posts?starredOnly=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "starredOnly",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog Post By Slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/posts/{{blogPostSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "posts",
+                "{{blogPostSlug}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Blog",
+      "item": [
+        {
+          "name": "List All Blog Posts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/blog-posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "blog-posts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog Post By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/blog-posts/{{blogPostId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "blog-posts",
+                "{{blogPostId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Blog Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{blogPostSlug}}\",\n  \"title\": \"My First Post\",\n  \"content\": \"Full blog post body\",\n  \"excerpt\": \"Short summary\",\n  \"starred\": true,\n  \"published\": true,\n  \"publishedAt\": \"2026-06-29T16:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/blog-posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "blog-posts"
+              ]
+            },
+            "description": "After running, manually copy the returned id into blogPostId if you want to use the id-based requests."
+          }
+        },
+        {
+          "name": "Update Blog Post",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{blogPostSlug}}\",\n  \"title\": \"My First Post Updated\",\n  \"content\": \"Updated blog post body\",\n  \"excerpt\": \"Updated summary\",\n  \"starred\": false,\n  \"published\": true,\n  \"publishedAt\": \"2026-06-29T16:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/blog-posts/{{blogPostId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "blog-posts",
+                "{{blogPostId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Blog Post",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/blog-posts/{{blogPostId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "blog-posts",
+                "{{blogPostId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Projects",
+      "item": [
+        {
+          "name": "List Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Featured Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?featuredOnly=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "featuredOnly",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Project By Slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{projectSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{projectSlug}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Projects",
+      "item": [
+        {
+          "name": "List All Projects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "projects"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Project By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/projects/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "projects",
+                "{{projectId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{projectSlug}}\",\n  \"title\": \"Personal Site\",\n  \"summary\": \"Portfolio and admin platform\",\n  \"description\": \"Long-form project description\",\n  \"techStack\": \"Next.js, Spring Boot, PostgreSQL, Docker\",\n  \"githubUrl\": \"https://github.com/example/personal-site\",\n  \"liveUrl\": \"https://example.com\",\n  \"status\": \"COMPLETED\",\n  \"featured\": true,\n  \"published\": true,\n  \"displayOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "projects"
+              ]
+            },
+            "description": "After running, manually copy the returned id into projectId."
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{projectSlug}}\",\n  \"title\": \"Personal Site Updated\",\n  \"summary\": \"Updated portfolio and admin platform\",\n  \"description\": \"Updated project description\",\n  \"techStack\": \"Next.js, Spring Boot, PostgreSQL, Docker\",\n  \"githubUrl\": \"https://github.com/example/personal-site\",\n  \"liveUrl\": \"https://example.com\",\n  \"status\": \"COMPLETED\",\n  \"featured\": false,\n  \"published\": true,\n  \"displayOrder\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/projects/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "projects",
+                "{{projectId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/projects/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "projects",
+                "{{projectId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Freelance",
+      "item": [
+        {
+          "name": "List Freelance Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/freelance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "freelance"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Featured Freelance Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/freelance?featuredOnly=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "freelance"
+              ],
+              "query": [
+                {
+                  "key": "featuredOnly",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Freelance Project By Slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/freelance/{{freelanceProjectSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "freelance",
+                "{{freelanceProjectSlug}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Freelance",
+      "item": [
+        {
+          "name": "List All Freelance Projects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/freelance-projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "freelance-projects"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Freelance Project By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/freelance-projects/{{freelanceProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "freelance-projects",
+                "{{freelanceProjectId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Freelance Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{freelanceProjectSlug}}\",\n  \"clientName\": \"Acme Ltd\",\n  \"projectTitle\": \"Marketing Site Redesign\",\n  \"summary\": \"Modernized client website\",\n  \"description\": \"Full freelance engagement details\",\n  \"services\": [\"Design\", \"Frontend\", \"Backend\"],\n  \"testimonial\": \"Great work.\",\n  \"websiteUrl\": \"https://client-site.com\",\n  \"thumbnailUrl\": \"https://cdn.example.com/thumb.jpg\",\n  \"featured\": true,\n  \"published\": true,\n  \"completedAt\": \"2026-06-29T17:00:00\",\n  \"displayOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/freelance-projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "freelance-projects"
+              ]
+            },
+            "description": "After running, manually copy the returned id into freelanceProjectId."
+          }
+        },
+        {
+          "name": "Update Freelance Project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"{{freelanceProjectSlug}}\",\n  \"clientName\": \"Acme Ltd\",\n  \"projectTitle\": \"Marketing Site Redesign Updated\",\n  \"summary\": \"Updated client website summary\",\n  \"description\": \"Updated freelance engagement details\",\n  \"services\": [\"Design\", \"Frontend\"],\n  \"testimonial\": \"Great work.\",\n  \"websiteUrl\": \"https://client-site.com\",\n  \"thumbnailUrl\": \"https://cdn.example.com/thumb.jpg\",\n  \"featured\": false,\n  \"published\": true,\n  \"completedAt\": \"2026-06-29T17:00:00\",\n  \"displayOrder\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/freelance-projects/{{freelanceProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "freelance-projects",
+                "{{freelanceProjectId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Freelance Project",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/freelance-projects/{{freelanceProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "freelance-projects",
+                "{{freelanceProjectId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,10 @@ plugins {
 group = "uk.co.eduardteodor"
 version = "0.0.1-SNAPSHOT"
 
+val jjwtVersion = "0.12.7"
+val totpVersion = "1.7.1"
+val zxingVersion = "3.5.3"
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
@@ -31,6 +35,14 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	implementation(platform("io.jsonwebtoken:jjwt-bom:$jjwtVersion"))
+	implementation("io.jsonwebtoken:jjwt-api")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson")
+	implementation("dev.samstevens.totp:totp:$totpVersion")
+	implementation("com.google.zxing:core:$zxingVersion")
+	implementation("com.google.zxing:javase:$zxingVersion")
 }
 
 tasks.withType<Test> {
