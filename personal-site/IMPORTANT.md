@@ -5,6 +5,7 @@ This document describes the current backend API so a frontend or coding agent ca
 ## Base URL
 
 - Local development: `http://localhost:8080`
+- Website production: `https://wbapi.eduardteodor.co.uk`
 
 ## Auth Model
 

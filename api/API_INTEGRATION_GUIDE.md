@@ -5,6 +5,7 @@ This document describes the current backend API so a frontend or coding agent ca
 ## Base URL
 
 - Local development: `http://localhost:8080`
+- Website production: `https://wbapi.eduardteodor.co.uk`
 
 ## Auth Model
 
@@ -320,4 +321,3 @@ Expect these common statuses:
 - there is no separate role/permission model implemented yet
 - there is no refresh token flow implemented
 - there is no public health/me endpoint documented here
-

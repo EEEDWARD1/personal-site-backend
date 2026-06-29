@@ -53,7 +53,7 @@ Create a remotely managed tunnel in Cloudflare Zero Trust:
 5. Add a public hostname:
 
 ```text
-Hostname: api.eduardteodor.co.uk
+Hostname: wbapi.eduardteodor.co.uk
 Type: HTTP
 URL: http://api:8080
 ```
