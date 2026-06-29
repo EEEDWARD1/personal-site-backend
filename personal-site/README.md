@@ -47,6 +47,10 @@ Build command: npm run build
 Publish directory: .next
 ```
 
+If the Netlify project is connected to the repository root, set the base
+directory to `personal-site`. If the Netlify project is connected directly to
+the `personal-site` folder, leave the base directory empty.
+
 Required environment variable:
 
 ```env
