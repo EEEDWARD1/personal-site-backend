@@ -1,85 +1,24 @@
-# Production Cloudflare Tunnel stack for api.eduardteodor.co.uk.
-#
-# The backend service is intentionally attached only to the private network and
-# does not publish Docker ports. Public traffic reaches it exclusively through
-# the cloudflared connector.
 services:
-  backend:
-    build:
-      context: ./backend-java
-      dockerfile: dockerfile
-    container_name: personal-site-api
-    restart: unless-stopped
+  postgres:
+    image: postgres:17-alpine
+    container_name: my_postgres
+
     environment:
-      SERVER_PORT: 8000
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-    expose:
-      # Expose documents the internal container port for other services on the
-      # Docker network. It does not publish the API to the host or internet.
-      - "8000"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
-      test:
-        - CMD-SHELL
-        - >
-          wget -qO- http://127.0.0.1:8000/health >/dev/null || exit 1
-      interval: 30s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      - backend_private
+      retries: 5
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: personal-site-cloudflared
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      # Run parameter consumed by cloudflared. This enables /ready and /metrics
-      # without changing the token-based tunnel command below.
-      TUNNEL_METRICS: 0.0.0.0:2000
-    # The token is loaded from .env. Keep the exact tunnel command Cloudflare
-    # recommends for Docker.
-    command:
-      - tunnel
-      - --no-autoupdate
-      - run
-      - --token
-      - ${TUNNEL_TOKEN}
-    # cloudflared exposes /ready on the metrics listener and returns 200 only
-    # after it has an active connection to Cloudflare's edge.
-    healthcheck:
-      test:
-        - CMD
-        - cloudflared
-        - tunnel
-        - health
-        - --ready-endpoint
-        - http://127.0.0.1:2000/ready
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    # cloudflared needs outbound internet access and private Docker DNS access
-    # to the backend service name.
-    networks:
-      - tunnel_egress
-      - backend_private
-
-networks:
-  # Normal bridge network so cloudflared can make outbound connections to
-  # Cloudflare. No inbound host ports are published.
-  tunnel_egress:
-    driver: bridge
-
-  # Internal-only network for origin traffic between cloudflared and backend.
-  backend_private:
-    driver: bridge
-    internal: true
+volumes:
+  postgres_data:
