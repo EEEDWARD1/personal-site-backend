@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Site
 
-## Getting Started
+Standalone Next.js frontend for `eduardteodor.co.uk`.
 
-First, run the development server:
+The site is deployed independently on Netlify. It does not rely on files or
+environment variables from the repository root at deploy time.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## API
+
+The frontend talks to the public API at:
+
+```text
+https://wbapi.eduardteodor.co.uk
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set this in Netlify as:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_API_BASE_URL=https://wbapi.eduardteodor.co.uk
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If the variable is not set, the app defaults to the same production API host.
+For local backend development, override it in `.env.local`:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Local Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Install dependencies and run the frontend:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+npm run dev
+```
 
-## Deploy on Vercel
+Open `http://localhost:3000`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Netlify
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use these build settings:
+
+```text
+Base directory: personal-site
+Build command: npm run build
+Publish directory: .next
+```
+
+Required environment variable:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://wbapi.eduardteodor.co.uk
+```
+
+## Checks
+
+```bash
+npm run lint
+npm run build
+```

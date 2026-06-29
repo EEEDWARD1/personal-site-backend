@@ -6,6 +6,6 @@
 # locally managed tunnel with a credentials file.
 
 ingress:
-  - hostname: api.eduardteodor.co.uk
-    service: http://backend:8000
+  - hostname: wbapi.eduardteodor.co.uk
+    service: http://api:8080
   - service: http_status:404
