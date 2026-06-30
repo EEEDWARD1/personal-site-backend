@@ -104,6 +104,7 @@ public class FreelanceProjectController {
         project.setTestimonial(request.testimonial() == null ? null : request.testimonial().trim());
         project.setWebsiteUrl(request.websiteUrl() == null ? null : request.websiteUrl().trim());
         project.setThumbnailUrl(request.thumbnailUrl() == null ? null : request.thumbnailUrl().trim());
+        project.setHeroURL(request.heroUrl() == null ? null : request.heroUrl().trim());
         project.setFeatured(request.featured());
         project.setPublished(request.published());
         project.setCompletedAt(request.completedAt());
@@ -128,6 +129,7 @@ public class FreelanceProjectController {
             String testimonial,
             @Size(max = 500) String websiteUrl,
             @Size(max = 500) String thumbnailUrl,
+            @Size(max = 500) String heroUrl,
             boolean featured,
             boolean published,
             LocalDateTime completedAt,
@@ -146,6 +148,7 @@ public class FreelanceProjectController {
             String testimonial,
             String websiteUrl,
             String thumbnailUrl,
+            String heroUrl,
             boolean featured,
             boolean published,
             LocalDateTime completedAt,
@@ -165,6 +168,7 @@ public class FreelanceProjectController {
                     project.getTestimonial(),
                     project.getWebsiteUrl(),
                     project.getThumbnailUrl(),
+                    project.getHeroURL(),
                     project.isFeatured(),
                     project.isPublished(),
                     project.getCompletedAt(),

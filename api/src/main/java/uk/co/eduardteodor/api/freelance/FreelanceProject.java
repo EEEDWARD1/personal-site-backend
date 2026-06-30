@@ -50,6 +50,9 @@ public class FreelanceProject {
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
 
+    @Column(name = "hero_url", length = 500)
+    private String heroUrl;
+
     @Column(nullable = false)
     private boolean featured;
 
@@ -154,6 +157,14 @@ public class FreelanceProject {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public String getHeroURL() {
+        return heroUrl;
+    }
+
+    public void setHeroURL(String heroUrl) {
+        this.heroUrl = heroUrl;
     }
 
     public boolean isFeatured() {

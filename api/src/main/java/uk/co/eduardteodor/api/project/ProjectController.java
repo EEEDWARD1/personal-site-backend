@@ -100,6 +100,8 @@ public class ProjectController {
         project.setTechStack(request.techStack());
         project.setGithubUrl(request.githubUrl() == null ? null : request.githubUrl().trim());
         project.setLiveUrl(request.liveUrl() == null ? null : request.liveUrl().trim());
+        project.setThumbnailUrl(request.thumbnailUrl() == null ? null : request.thumbnailUrl().trim());
+        project.setHeroUrl(request.heroUrl() == null ? null : request.heroUrl().trim());
         project.setStatus(request.status().trim());
         project.setFeatured(request.featured());
         project.setPublished(request.published());
@@ -122,6 +124,8 @@ public class ProjectController {
             String techStack,
             @Size(max = 500) String githubUrl,
             @Size(max = 500) String liveUrl,
+            @Size(max = 500) String thumbnailUrl,
+            @Size(max = 500) String heroUrl,
             @NotBlank @Size(max = 50) String status,
             boolean featured,
             boolean published,
@@ -138,6 +142,8 @@ public class ProjectController {
             String techStack,
             String githubUrl,
             String liveUrl,
+            String thumbnailUrl,
+            String heroUrl,
             String status,
             boolean featured,
             boolean published,
@@ -155,6 +161,8 @@ public class ProjectController {
                     project.getTechStack(),
                     project.getGithubUrl(),
                     project.getLiveUrl(),
+                    project.getThumbnailUrl(),
+                    project.getHeroUrl(),
                     project.getStatus(),
                     project.isFeatured(),
                     project.isPublished(),

@@ -41,6 +41,12 @@ public class Project {
     @Column(name = "live_url", length = 500)
     private String liveUrl;
 
+    @Column(name = "thumbnail_url", length = 500)
+    private String thumbnailUrl;
+
+    @Column(name = "hero_url", length = 500)
+    private String heroUrl;
+
     @Column(nullable = false, length = 50)
     private String status;
 
@@ -130,6 +136,14 @@ public class Project {
     public void setLiveUrl(String liveUrl) {
         this.liveUrl = liveUrl;
     }
+
+    public String getThumbnailUrl() {return thumbnailUrl;}
+
+    public void setThumbnailUrl(String thumbnailUrl) {this.thumbnailUrl = thumbnailUrl;}
+
+    public String getHeroUrl() {return heroUrl;}
+
+    public void setHeroUrl(String heroUrl) {this.heroUrl = heroUrl;}
 
     public String getStatus() {
         return status;
