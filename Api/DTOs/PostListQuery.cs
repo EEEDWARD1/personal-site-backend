@@ -1,6 +1,6 @@
 namespace Api.DTOs;
 
-public record PostListQuery(bool? Featured, string? Sort, int? Limit, int? Offset)
+public record PostListQuery(bool? Featured, string? Sort, int? Limit, int? Offset, string? Tag)
 {
     public const int DefaultLimit = 20;
     public const int MaxLimit = 50;
@@ -18,6 +18,8 @@ public record PostListQuery(bool? Featured, string? Sort, int? Limit, int? Offse
 
         if (EffectiveOffset < 0)
             return new ApiError(new ErrorBody("INVALID_QUERY", "offset must be 0 or greater."));
+        if (Tag is not null && Tag.Length > 50)
+            return new ApiError(new ErrorBody("INVALID_QUERY", "tag must be 50 characters or less."));
 
         return null;
     }
