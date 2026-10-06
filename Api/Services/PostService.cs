@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Services;
 
-public class ProjectService(AppDbContext db)
+public class PostService(AppDbContext db)
 {
-    public async Task<ProjectResponse?> GetBySlugAsync(string slug, CancellationToken ct)
+    public async Task<PublicPostResponse?> GetPublishedBySlugAsync(PostKind kind, string slug, CancellationToken ct)
     {
         return await db.Posts
             .AsNoTracking()
             .Where(p => p.Kind == PostKind.Project
                 && p.Published
                 && p.Slug == slug)
-            .Select(p => new ProjectResponse(
+            .Select(p => new PublicPostResponse(
                 p.Slug,
                 p.Title,
                 p.Summary,

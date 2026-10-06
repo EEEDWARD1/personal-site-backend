@@ -1,6 +1,6 @@
 namespace Api.DTOs;
 
-public record ThoughtResponse(
+public record PublicPostResponse(
     string Slug,
     string Title,
     string? Summary,
