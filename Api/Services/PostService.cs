@@ -11,7 +11,7 @@ public class PostService(AppDbContext db)
     {
         return await db.Posts
             .AsNoTracking()
-            .Where(p => p.Kind == PostKind.Project
+            .Where(p => p.Kind == kind
                 && p.Published
                 && p.Slug == slug)
             .Select(p => new PublicPostResponse(
