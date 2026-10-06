@@ -34,6 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // 3. Application services (one instance per HTTP request)
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ThoughtService>();
 
 // 4. OpenAPI document generation (Scalar renders it as docs)
 builder.Services.AddOpenApi();
@@ -49,6 +50,7 @@ if (app.Environment.IsDevelopment())
 
 // 6. Endpoints
 app.MapProjectEndpoints();
+app.MapThoughtEndpoints();
 
 app.Run();
 return 0;
