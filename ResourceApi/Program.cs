@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ResourceApi.Data;
+using ResourceApi.Endpoints;
 using ResourceApi.Models;
+using ResourceApi.Repositories;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddDbContextPool<AppDbContext>(opt =>
 );
 
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 
 var app = builder.Build();
 
@@ -33,5 +36,6 @@ if (app.Environment.IsDevelopment() && args.Contains("--seed"))
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello World");
+app.MapPostEndpoints();
 
 app.Run();
