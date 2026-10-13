@@ -1,0 +1,2 @@
+namespace ResourceApi.Data;
+
