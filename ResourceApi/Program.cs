@@ -8,9 +8,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextPool<AppDbContext>(opt => 
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("AppDbContext"),
-        o => o.MapEnum<PostKind>("post_kind")
-    )
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("AppDbContext"))
     .UseSnakeCaseNamingConvention()
 );
 
@@ -30,6 +28,7 @@ if (app.Environment.IsDevelopment() && args.Contains("--seed"))
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.EnsureCreatedAsync();
     await DatabaseSeeder.SeedAsync(db);
 }
 

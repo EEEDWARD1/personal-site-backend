@@ -1,14 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS citext;
 
-CREATE TYPE post_kind AS ENUM (
-    'project',
-    'thought'
-);
-
 CREATE TABLE posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    kind post_kind NOT NULL,
 
     slug TEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
@@ -16,6 +9,7 @@ CREATE TABLE posts (
     content TEXT NOT NULL,
 
     featured BOOLEAN NOT NULL DEFAULT FALSE,
+    is_project BOOLEAN NOT NULL DEFAULT FALSE,
     published BOOLEAN NOT NULL DEFAULT FALSE,
     published_at TIMESTAMPTZ,
 
@@ -45,8 +39,8 @@ CREATE TABLE post_tags (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_posts_kind
-    ON posts(kind);
+CREATE INDEX idx_posts_is_project
+    ON posts(is_project);
 
 CREATE INDEX idx_posts_published
     ON posts(published);

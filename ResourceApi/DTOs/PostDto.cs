@@ -1,3 +1,5 @@
+using ResourceApi.Models;
+
 namespace ResourceApi.DTOs;
 
 public record PostTitleDto(
@@ -20,5 +22,15 @@ public record PostDetailedDto(
     string Content,
     bool Featured,
     DateTime PublishedAt,
+    List<string> Tags
+);
+
+public record CreatePostDto(
+    bool IsProject,
+    string Title,
+    string? Summary,
+    string Content,
+    bool Featured,
+    bool Published,
     List<string> Tags
 );

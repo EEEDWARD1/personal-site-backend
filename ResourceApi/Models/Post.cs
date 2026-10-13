@@ -3,7 +3,7 @@ namespace ResourceApi.Models;
 public class Post
 {
     public Guid Id {get;set;}
-    public PostKind Kind {get;set;}
+    public bool IsProject {get;set;}
     public required string Slug {get;set;}
     public required string Title {get;set;}
 

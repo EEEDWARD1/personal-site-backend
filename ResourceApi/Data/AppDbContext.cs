@@ -13,6 +13,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("citext");
+
         modelBuilder.Entity<Post>(entity =>
         {
             entity.ToTable("posts");
@@ -22,8 +24,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(p => p.Id)
                 .HasDefaultValueSql("gen_random_uuid()");
 
-            entity.Property(p => p.Kind)
-                .HasColumnType("post_kind");
+            entity.Property(p => p.IsProject)
+                .HasDefaultValue(false);
 
             entity.HasIndex(p => p.Slug).IsUnique();
 

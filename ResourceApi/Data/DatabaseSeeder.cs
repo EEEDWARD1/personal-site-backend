@@ -25,13 +25,12 @@ public static class DatabaseSeeder
             {
                 var createdAt = faker.Date.PastOffset(2).UtcDateTime;
                 var published = faker.Random.Bool(0.8f);
+                var isProject = faker.Random.Bool(0.5f);
 
                 return new Post
                 {
                     Id = Guid.NewGuid(),
-                    Kind = i % 2 == 0
-                        ? PostKind.Project
-                        : PostKind.Thought,
+                    IsProject = isProject,
                     Slug = $"post-{i}",
                     Title = faker.Lorem.Sentence(),
                     Summary = faker.Lorem.Paragraph(),
