@@ -1,5 +1,5 @@
-using System.Formats.Asn1;
-using ResourceApi.Data;
+using Microsoft.EntityFrameworkCore;
+using ResourceApi.Models;
 
 namespace ResourceApi.Data;
 

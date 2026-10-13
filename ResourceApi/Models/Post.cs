@@ -1,4 +1,4 @@
-namespace PersonalSiteApi.Models;
+namespace ResourceApi.Models;
 
 public class Post
 {

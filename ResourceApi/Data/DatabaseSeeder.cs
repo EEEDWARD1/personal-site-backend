@@ -1,5 +1,6 @@
-using System.Data.Common;
-using System.Formats.Asn1;
+using Bogus;
+using Microsoft.EntityFrameworkCore;
+using ResourceApi.Models;
 
 namespace ResourceApi.Data;
 
@@ -52,7 +53,9 @@ public static class DatabaseSeeder
                 .Select(tag => new PostTag
                 {
                     PostId = post.Id,
-                    TagId = tag.Id
+                    TagId = tag.Id,
+                    Post = post,
+                    Tag = tag
                 }))
             .ToList();
 
