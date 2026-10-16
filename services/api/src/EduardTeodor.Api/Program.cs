@@ -37,4 +37,7 @@ var v1 = app.MapGroup("/api/v1");
 v1.MapPostEndpoints();
 v1.MapTagEndpoints();
 
+app.MapGet("/health", () => TypedResults.Ok(new { status = "healthy" }))
+    .WithName("Health");
+
 app.Run();
