@@ -7,6 +7,23 @@ namespace EduardTeodor.Api.Repositories;
 
 public class PostRepository(AppDbContext db) : IPostRepository
 {
+    public async Task<PostDetailedResponse?> GetPublishedPostBySlugAsync(string slug)
+    {
+        return await db.Posts
+            .Where(p => p.Slug == slug
+                    && p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow)
+            .Select(p => new PostDetailedResponse(
+                p.Slug,
+                p.Title,
+                p.Summary,
+                p.Content,
+                p.PublishedAt!.Value,
+                p.RepoUrl,
+                p.LiveUrl,
+                p.Featured
+            )).FirstOrDefaultAsync();
+    }
+
     public async Task<List<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query)
     {
         var posts = db.Posts

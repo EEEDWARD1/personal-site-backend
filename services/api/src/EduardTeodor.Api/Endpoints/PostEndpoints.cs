@@ -16,6 +16,9 @@ public static class PostEndpoints
 
         group.MapGet("/", GetPublishedPostSummaries)
             .WithName("Get Published Post Summaries");
+
+        group.MapGet("/{slug}", GetPublishedPostBySlug)
+            .WithName("Get Published Post By Slug");
     }
 
     private static async Task<Ok<List<PostTitleResponse>>> GetPublishedPostTitles(
@@ -34,5 +37,16 @@ public static class PostEndpoints
         var summaries = await repository.GetPublishedPostSummariesAsync(query);
 
         return TypedResults.Ok(summaries);
+    }
+    
+    private static async Task<Results<Ok<PostDetailedResponse>, NotFound>> GetPublishedPostBySlug(
+        string slug,
+        IPostRepository repository)
+    {
+        var post = await repository.GetPublishedPostBySlugAsync(slug);
+
+        return post is null
+            ? TypedResults.NotFound()
+            : TypedResults.Ok(post);
     }
 }
