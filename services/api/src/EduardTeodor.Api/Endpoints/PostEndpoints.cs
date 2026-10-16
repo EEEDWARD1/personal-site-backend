@@ -13,6 +13,9 @@ public static class PostEndpoints
 
         group.MapGet("/titles", GetPublishedPostTitles)
             .WithName("Get Published Post Titles");
+
+        group.MapGet("/", GetPublishedPostSummaries)
+            .WithName("Get Published Post Summaries");
     }
 
     private static async Task<Ok<List<PostTitleResponse>>> GetPublishedPostTitles(
@@ -22,5 +25,14 @@ public static class PostEndpoints
         var titles = await repository.GetPublishedPostTitlesAsync(query);
 
         return TypedResults.Ok(titles);
+    }
+
+    private static async Task<Ok<List<PostSummaryResponse>>> GetPublishedPostSummaries(
+        [AsParameters] PostQuery query,
+        IPostRepository repository)
+    {
+        var summaries = await repository.GetPublishedPostSummariesAsync(query);
+
+        return TypedResults.Ok(summaries);
     }
 }
