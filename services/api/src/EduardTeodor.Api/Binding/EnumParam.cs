@@ -1,10 +1,10 @@
 namespace EduardTeodor.Api.Binding;
 
 /// <summary>
-/// Query-string wrapper that binds an enum case-insensitively. Minimal APIs bind any
-/// type with a static TryParse; failure yields 400. Numeric values are rejected.
+/// Query-string wrapper that binds an enum case-insensitively. Unknown or numeric
+/// values bind as <c>Value = null</c>, i.e. "no filter", instead of failing with 400.
 /// </summary>
-public readonly record struct EnumParam<T>(T Value) where T : struct, Enum
+public readonly record struct EnumParam<T>(T? Value) where T : struct, Enum
 {
     public static bool TryParse(string? s, out EnumParam<T> result)
     {
@@ -18,6 +18,6 @@ public readonly record struct EnumParam<T>(T Value) where T : struct, Enum
         }
 
         result = default;
-        return false;
+        return true;
     }
 }
