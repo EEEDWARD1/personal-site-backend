@@ -1,4 +1,4 @@
-namespace EduardTeodor.Api.DTOs.Responses.Posts;
+namespace EduardTeodor.Api.DTOs.Posts;
 
 public record PostSummaryResponse(
     string Slug,

@@ -1,5 +1,4 @@
-using EduardTeodor.Api.DTOs.Requests.Posts;
-using EduardTeodor.Api.DTOs.Responses.Posts;
+using EduardTeodor.Api.DTOs.Posts;
 using EduardTeodor.Api.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 

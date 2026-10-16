@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace EduardTeodor.Api.DTOs.Responses.Posts;
+namespace EduardTeodor.Api.DTOs.Posts;
 
 public record PostDetailedResponse(
     string Slug,

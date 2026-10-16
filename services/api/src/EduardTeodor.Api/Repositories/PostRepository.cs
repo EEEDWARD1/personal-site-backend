@@ -1,6 +1,5 @@
 using EduardTeodor.Api.Data;
-using EduardTeodor.Api.DTOs.Requests.Posts;
-using EduardTeodor.Api.DTOs.Responses.Posts;
+using EduardTeodor.Api.DTOs.Posts;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduardTeodor.Api.Repositories;
@@ -29,7 +28,7 @@ public class PostRepository(AppDbContext db) : IPostRepository
         var posts = db.Posts
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
         
-        if (query.Type?.Value is { } type)
+        if (query.Type is { } type)
             posts = posts.Where(p => p.Type == type);
 
         if (query.IsFeatured.HasValue)
@@ -49,7 +48,7 @@ public class PostRepository(AppDbContext db) : IPostRepository
         var posts = db.Posts
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
 
-        if (query.Type?.Value is { } type)
+        if (query.Type is { } type)
             posts = posts.Where(p => p.Type == type);
 
         if (query.IsFeatured.HasValue)
