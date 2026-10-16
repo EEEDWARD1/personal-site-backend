@@ -8,7 +8,7 @@ CREATE TABLE posts (
 
     slug CITEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
-    summary TEXT NOT NUll DEFAULT "",
+    summary TEXT NOT NULL DEFAULT '',
     content TEXT NOT NULL,
 
     featured BOOLEAN NOT NULL DEFAULT FALSE,
