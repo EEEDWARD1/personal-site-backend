@@ -1,2 +1,0 @@
-ALTER TABLE users ADD COLUMN mfa_secret VARCHAR(255);
-ALTER TABLE users ADD COLUMN mfa_enabled BOOLEAN DEFAULT false;
