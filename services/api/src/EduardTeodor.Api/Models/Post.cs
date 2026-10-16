@@ -6,7 +6,7 @@ public class Post
     public PostType Type { get; set; } = PostType.Thought;
     public required string Slug { get; set; }
     public required string Title { get; set; }
-    public string? Summary { get; set; }
+    public required string Summary { get; set; }
     public required string Content { get; set; }
     public bool Featured { get; set; }
     public DateTime? PublishedAt { get; set; }
