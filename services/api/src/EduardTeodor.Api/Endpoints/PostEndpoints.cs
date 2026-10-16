@@ -1,5 +1,6 @@
 using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Posts;
+using EduardTeodor.Api.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,10 +26,10 @@ public static class PostEndpoints
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {
-        if (query.Type is { IsValid: false } invalidType)
-            return TypedResults.BadRequest(CreateInvalidTypeProblem(invalidType.Input));
+        if (!TryParsePostType(query.Type, out var type))
+            return TypedResults.BadRequest(CreateInvalidTypeProblem(query.Type));
 
-        var titles = await repository.GetPublishedPostTitlesAsync(query);
+        var titles = await repository.GetPublishedPostTitlesAsync(query, type);
 
         return TypedResults.Ok(titles);
     }
@@ -37,10 +38,10 @@ public static class PostEndpoints
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {
-        if (query.Type is { IsValid: false } invalidType)
-            return TypedResults.BadRequest(CreateInvalidTypeProblem(invalidType.Input));
+        if (!TryParsePostType(query.Type, out var type))
+            return TypedResults.BadRequest(CreateInvalidTypeProblem(query.Type));
 
-        var summaries = await repository.GetPublishedPostSummariesAsync(query);
+        var summaries = await repository.GetPublishedPostSummariesAsync(query, type);
 
         return TypedResults.Ok(summaries);
     }
@@ -51,6 +52,23 @@ public static class PostEndpoints
         Title = "Invalid post type",
         Detail = $"'{input}' is not a valid post type. Allowed values are 'project' and 'thought'."
     };
+
+    private static bool TryParsePostType(string? value, out PostType? type)
+    {
+        type = null;
+
+        if (value is null)
+            return true;
+
+        var enumName = Enum.GetNames<PostType>()
+            .FirstOrDefault(name => string.Equals(name, value.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (enumName is null)
+            return false;
+
+        type = Enum.Parse<PostType>(enumName);
+        return true;
+    }
     
     private static async Task<Results<Ok<PostDetailedResponse>, NotFound>> GetPublishedPostBySlug(
         string slug,

@@ -1,9 +1,7 @@
-using EduardTeodor.Api.Binding;
-
 namespace EduardTeodor.Api.DTOs.Posts;
 
 public record PostQuery(
-    PostTypeParam? Type,
+    string? Type,
     bool? IsFeatured,
     bool? EnableTags,
     string[]? Tag = null,

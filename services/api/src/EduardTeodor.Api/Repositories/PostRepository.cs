@@ -25,11 +25,12 @@ public class PostRepository(AppDbContext db) : IPostRepository
             )).FirstOrDefaultAsync();
     }
 
-    public async Task<PagedResponse<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query)
+    public async Task<PagedResponse<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query, PostType? type)
     {
         var posts = ApplyPostFilters(
             db.Posts.Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow),
-            query);
+            query,
+            type);
 
         var totalCount = await posts.CountAsync();
         var (page, pageSize, skip) = GetPagination(query);
@@ -56,11 +57,12 @@ public class PostRepository(AppDbContext db) : IPostRepository
         return new PagedResponse<PostSummaryResponse>(items, page, pageSize, totalCount);
     }
 
-    public async Task<PagedResponse<PostTitleResponse>> GetPublishedPostTitlesAsync(PostQuery query)
+    public async Task<PagedResponse<PostTitleResponse>> GetPublishedPostTitlesAsync(PostQuery query, PostType? type)
     {
         var posts = ApplyPostFilters(
             db.Posts.Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow),
-            query);
+            query,
+            type);
 
         var totalCount = await posts.CountAsync();
         var (page, pageSize, skip) = GetPagination(query);
@@ -95,10 +97,10 @@ public class PostRepository(AppDbContext db) : IPostRepository
         return (page, pageSize, skip);
     }
 
-    private static IQueryable<Post> ApplyPostFilters(IQueryable<Post> posts, PostQuery query)
+    private static IQueryable<Post> ApplyPostFilters(IQueryable<Post> posts, PostQuery query, PostType? type)
     {
-        if (query.Type is { } type)
-            posts = posts.Where(p => p.Type == type.Value);
+        if (type is { } postType)
+            posts = posts.Where(p => p.Type == postType);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
