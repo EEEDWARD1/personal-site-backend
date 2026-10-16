@@ -10,9 +10,6 @@ public class Post
     public required string Content { get; set; }
     public bool Featured { get; set; }
     public DateTime? PublishedAt { get; set; }
-    public string? RepoUrl { get; set; }
-    public string? LiveUrl { get; set; }
-
     public DateTime CreatedAt { get; set; }          // DB: now()
     public DateTime UpdatedAt { get; set; }          // DB: trigger
 

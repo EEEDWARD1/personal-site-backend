@@ -17,8 +17,6 @@ public class PostRepository(AppDbContext db) : IPostRepository
                 p.Summary,
                 p.Content,
                 p.PublishedAt!.Value,
-                p.RepoUrl,
-                p.LiveUrl,
                 p.Featured
             )).FirstOrDefaultAsync();
     }

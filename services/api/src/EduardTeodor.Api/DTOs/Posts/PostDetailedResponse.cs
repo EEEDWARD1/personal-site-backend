@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace EduardTeodor.Api.DTOs.Posts;
 
 public record PostDetailedResponse(
@@ -8,7 +6,5 @@ public record PostDetailedResponse(
     string Summary,
     string Content,
     DateTime PublishedAt,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? RepoUrl,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? LiveUrl,
     bool Featured
 );

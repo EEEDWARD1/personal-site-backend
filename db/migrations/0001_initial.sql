@@ -16,10 +16,6 @@ CREATE TABLE posts (
     -- NULL = draft, set = published (can be future-dated for scheduling)
     published_at TIMESTAMPTZ,
 
-    -- project-only fields (NULL for thoughts)
-    repo_url TEXT,
-    live_url TEXT,
-
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

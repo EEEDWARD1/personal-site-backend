@@ -34,8 +34,6 @@ public static class DevSeeder
             .RuleFor(p => p.PublishedAt, f => f.Random.WeightedRandom(
                 [f.Date.Past(1).ToUniversalTime(), (DateTime?)null, f.Date.Soon(14).ToUniversalTime()],
                 [0.7f, 0.2f, 0.1f]))
-            .RuleFor(p => p.RepoUrl, (f, p) =>
-                p.Type == PostType.Project ? $"https://github.com/eduard/{p.Slug}" : null)
             .RuleFor(p => p.Tags, f => f.PickRandom(tags, f.Random.Int(1, 3)).ToList())
             .Generate(50);
 
