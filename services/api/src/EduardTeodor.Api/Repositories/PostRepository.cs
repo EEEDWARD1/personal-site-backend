@@ -13,7 +13,7 @@ public class PostRepository(AppDbContext db) : IPostRepository
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
 
         if (query.Type.HasValue)
-            posts = posts.Where(p => p.Type == query.Type.Value);
+            posts = posts.Where(p => p.Type == query.Type.Value.Value);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
