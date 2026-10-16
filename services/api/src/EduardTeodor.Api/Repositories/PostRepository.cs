@@ -12,8 +12,8 @@ public class PostRepository(AppDbContext db) : IPostRepository
         var posts = db.Posts
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
         
-        if (query.Type.HasValue)
-            posts = posts.Where(p => p.Type == query.Type.Value.Value);
+        if (query.Type?.Value is { } type)
+            posts = posts.Where(p => p.Type == type);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
@@ -32,8 +32,8 @@ public class PostRepository(AppDbContext db) : IPostRepository
         var posts = db.Posts
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
 
-        if (query.Type.HasValue)
-            posts = posts.Where(p => p.Type == query.Type.Value.Value);
+        if (query.Type?.Value is { } type)
+            posts = posts.Where(p => p.Type == type);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
