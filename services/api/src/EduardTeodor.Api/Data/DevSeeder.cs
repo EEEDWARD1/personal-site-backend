@@ -24,6 +24,7 @@ public static class DevSeeder
             {
                 Slug = f.Lorem.Slug(4),
                 Title = f.Lorem.Sentence(5).TrimEnd('.'),
+                Summary = string.Empty,
                 Content = string.Join("\n\n", f.Lorem.Paragraphs(4)),
             })
             .RuleFor(p => p.Type, f => f.PickRandom<PostType>())

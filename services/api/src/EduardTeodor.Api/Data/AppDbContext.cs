@@ -14,7 +14,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             entity.ToTable("posts");
             entity.Property(p => p.Id).HasDefaultValueSql("uuidv7()");
-            entity.Property(p => p.Summary).HasDefaultValueSql("");
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
             entity.Property(p => p.UpdatedAt)
                 .HasDefaultValueSql("now()")
