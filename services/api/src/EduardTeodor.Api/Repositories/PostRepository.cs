@@ -2,6 +2,7 @@ using EduardTeodor.Api.Data;
 using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Posts;
 using EduardTeodor.Api.DTOs.Tags;
+using EduardTeodor.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduardTeodor.Api.Repositories;
@@ -26,14 +27,9 @@ public class PostRepository(AppDbContext db) : IPostRepository
 
     public async Task<PagedResponse<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query)
     {
-        var posts = db.Posts
-            .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
-        
-        if (query.Type is { } type)
-            posts = posts.Where(p => p.Type == type.Value);
-
-        if (query.IsFeatured.HasValue)
-            posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
+        var posts = ApplyPostFilters(
+            db.Posts.Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow),
+            query);
 
         var totalCount = await posts.CountAsync();
         var (page, pageSize, skip) = GetPagination(query);
@@ -62,14 +58,9 @@ public class PostRepository(AppDbContext db) : IPostRepository
 
     public async Task<PagedResponse<PostTitleResponse>> GetPublishedPostTitlesAsync(PostQuery query)
     {
-        var posts = db.Posts
-            .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
-
-        if (query.Type is { } type)
-            posts = posts.Where(p => p.Type == type.Value);
-
-        if (query.IsFeatured.HasValue)
-            posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
+        var posts = ApplyPostFilters(
+            db.Posts.Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow),
+            query);
 
         var totalCount = await posts.CountAsync();
         var (page, pageSize, skip) = GetPagination(query);
@@ -102,5 +93,25 @@ public class PostRepository(AppDbContext db) : IPostRepository
         var skip = (int)Math.Min(((long)page - 1) * pageSize, int.MaxValue);
 
         return (page, pageSize, skip);
+    }
+
+    private static IQueryable<Post> ApplyPostFilters(IQueryable<Post> posts, PostQuery query)
+    {
+        if (query.Type is { } type)
+            posts = posts.Where(p => p.Type == type.Value);
+
+        if (query.IsFeatured.HasValue)
+            posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
+
+        var tagSlugs = query.Tag?
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Select(tag => tag.Trim())
+            .Distinct()
+            .ToArray();
+
+        if (tagSlugs is { Length: > 0 })
+            posts = posts.Where(p => p.Tags.Any(tag => tagSlugs.Contains(tag.Slug)));
+
+        return posts;
     }
 }

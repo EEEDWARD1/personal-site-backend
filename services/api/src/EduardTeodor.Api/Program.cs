@@ -14,6 +14,7 @@ builder.Services.AddDbContextPool<AppDbContext>(opt =>
 );
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddOpenApi();
 
 builder.Services.ConfigureHttpJsonOptions(o =>
@@ -34,5 +35,6 @@ if (app.Environment.IsDevelopment())
 
 var v1 = app.MapGroup("/api/v1");
 v1.MapPostEndpoints();
+v1.MapTagEndpoints();
 
 app.Run();
