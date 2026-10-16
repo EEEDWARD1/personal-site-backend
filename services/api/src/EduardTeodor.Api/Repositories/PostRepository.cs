@@ -1,5 +1,6 @@
 using EduardTeodor.Api.Data;
 using EduardTeodor.Api.DTOs.Posts;
+using EduardTeodor.Api.DTOs.Tags;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduardTeodor.Api.Repositories;
@@ -17,7 +18,8 @@ public class PostRepository(AppDbContext db) : IPostRepository
                 p.Summary,
                 p.Content,
                 p.PublishedAt!.Value,
-                p.Featured
+                p.Featured,
+                p.Tags.Select(t => new TagResponse(t.Name, t.Slug)).ToList()
             )).FirstOrDefaultAsync();
     }
 
@@ -27,7 +29,7 @@ public class PostRepository(AppDbContext db) : IPostRepository
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
         
         if (query.Type is { } type)
-            posts = posts.Where(p => p.Type == type);
+            posts = posts.Where(p => p.Type == type.Value);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
@@ -47,7 +49,7 @@ public class PostRepository(AppDbContext db) : IPostRepository
             .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
 
         if (query.Type is { } type)
-            posts = posts.Where(p => p.Type == type);
+            posts = posts.Where(p => p.Type == type.Value);
 
         if (query.IsFeatured.HasValue)
             posts = posts.Where(p => p.Featured == query.IsFeatured.Value);

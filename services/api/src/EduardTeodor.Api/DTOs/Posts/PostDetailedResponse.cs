@@ -1,3 +1,5 @@
+using EduardTeodor.Api.DTOs.Tags;
+
 namespace EduardTeodor.Api.DTOs.Posts;
 
 public record PostDetailedResponse(
@@ -6,5 +8,6 @@ public record PostDetailedResponse(
     string Summary,
     string Content,
     DateTime PublishedAt,
-    bool Featured
+    bool Featured,
+    List<TagResponse> Tags
 );
