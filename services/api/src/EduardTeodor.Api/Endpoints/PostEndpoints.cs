@@ -1,3 +1,4 @@
+using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Posts;
 using EduardTeodor.Api.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +21,7 @@ public static class PostEndpoints
             .WithName("Get Published Post By Slug");
     }
 
-    private static async Task<Ok<List<PostTitleResponse>>> GetPublishedPostTitles(
+    private static async Task<Ok<PagedResponse<PostTitleResponse>>> GetPublishedPostTitles(
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {
@@ -29,7 +30,7 @@ public static class PostEndpoints
         return TypedResults.Ok(titles);
     }
 
-    private static async Task<Ok<List<PostSummaryResponse>>> GetPublishedPostSummaries(
+    private static async Task<Ok<PagedResponse<PostSummaryResponse>>> GetPublishedPostSummaries(
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {

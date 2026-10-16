@@ -2,4 +2,10 @@ using EduardTeodor.Api.Binding;
 
 namespace EduardTeodor.Api.DTOs.Posts;
 
-public record PostQuery(PostTypeParam? Type, bool? IsFeatured);
+public record PostQuery(
+    PostTypeParam? Type,
+    bool? IsFeatured,
+    bool? EnableTags,
+    int Page = 1,
+    int PageSize =20
+);
