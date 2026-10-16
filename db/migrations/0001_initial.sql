@@ -3,12 +3,12 @@ CREATE EXTENSION IF NOT EXISTS citext;
 CREATE TABLE posts (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
 
-        type TEXT NOT NULL DEFAULT 'thought'
+    type TEXT NOT NULL DEFAULT 'thought'
         CONSTRAINT posts_type_valid CHECK (type IN ('project', 'thought')),
 
     slug CITEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
-    summary TEXT,
+    summary TEXT NOT NUll DEFAULT "",
     content TEXT NOT NULL,
 
     featured BOOLEAN NOT NULL DEFAULT FALSE,
