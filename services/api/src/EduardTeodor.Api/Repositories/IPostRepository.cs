@@ -4,5 +4,6 @@ using EduardTeodor.Api.Models;
 
 public interface IPostRepository
 {
+    Task<List<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query);
     Task<List<PostTitleResponse>> GetPublishedPostTitlesAsync(PostQuery query);
 }

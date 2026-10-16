@@ -7,6 +7,26 @@ namespace EduardTeodor.Api.Repositories;
 
 public class PostRepository(AppDbContext db) : IPostRepository
 {
+    public async Task<List<PostSummaryResponse>> GetPublishedPostSummariesAsync(PostQuery query)
+    {
+        var posts = db.Posts
+            .Where(p => p.PublishedAt != null && p.PublishedAt <= DateTime.UtcNow);
+        
+        if (query.Type.HasValue)
+            posts = posts.Where(p => p.Type == query.Type.Value.Value);
+
+        if (query.IsFeatured.HasValue)
+            posts = posts.Where(p => p.Featured == query.IsFeatured.Value);
+        
+        return await posts
+            .OrderByDescending(p => p.PublishedAt)
+            .Select(p => new PostSummaryResponse(
+                p.Slug, 
+                p.Title, 
+                p.Summary, p.Featured))
+            .ToListAsync();
+    }
+
     public async Task<List<PostTitleResponse>> GetPublishedPostTitlesAsync(PostQuery query)
     {
         var posts = db.Posts
