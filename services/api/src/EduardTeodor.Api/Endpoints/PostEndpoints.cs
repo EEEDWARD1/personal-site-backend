@@ -1,7 +1,7 @@
 using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Posts;
-using EduardTeodor.Api.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EduardTeodor.Api.Endpoints;
 
@@ -21,23 +21,36 @@ public static class PostEndpoints
             .WithName("Get Published Post By Slug");
     }
 
-    private static async Task<Ok<PagedResponse<PostTitleResponse>>> GetPublishedPostTitles(
+    private static async Task<Results<Ok<PagedResponse<PostTitleResponse>>, BadRequest<ProblemDetails>>> GetPublishedPostTitles(
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {
+        if (query.Type is { IsValid: false } invalidType)
+            return TypedResults.BadRequest(CreateInvalidTypeProblem(invalidType.Input));
+
         var titles = await repository.GetPublishedPostTitlesAsync(query);
 
         return TypedResults.Ok(titles);
     }
 
-    private static async Task<Ok<PagedResponse<PostSummaryResponse>>> GetPublishedPostSummaries(
+    private static async Task<Results<Ok<PagedResponse<PostSummaryResponse>>, BadRequest<ProblemDetails>>> GetPublishedPostSummaries(
         [AsParameters] PostQuery query,
         IPostRepository repository)
     {
+        if (query.Type is { IsValid: false } invalidType)
+            return TypedResults.BadRequest(CreateInvalidTypeProblem(invalidType.Input));
+
         var summaries = await repository.GetPublishedPostSummariesAsync(query);
 
         return TypedResults.Ok(summaries);
     }
+
+    private static ProblemDetails CreateInvalidTypeProblem(string? input) => new()
+    {
+        Status = StatusCodes.Status400BadRequest,
+        Title = "Invalid post type",
+        Detail = $"'{input}' is not a valid post type. Allowed values are 'project' and 'thought'."
+    };
     
     private static async Task<Results<Ok<PostDetailedResponse>, NotFound>> GetPublishedPostBySlug(
         string slug,
