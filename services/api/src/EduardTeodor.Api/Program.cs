@@ -33,7 +33,7 @@ if (app.Environment.IsDevelopment())
     await DevSeeder.SeedAsync(db);
 }
 
-var v1 = app.MapGroup("/api/v1");
+var v1 = app.MapGroup("/v1");
 v1.MapPostEndpoints();
 v1.MapTagEndpoints();
 
