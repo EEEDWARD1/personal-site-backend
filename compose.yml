@@ -1,5 +1,6 @@
 services:
   api:
+    container_name: et-api
     build: ./services/api
     environment:
       ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
@@ -9,6 +10,7 @@ services:
         condition: service_healthy
 
   db:
+    container_name: et_db
     image: postgres:18-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
