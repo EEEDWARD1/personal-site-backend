@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using EduardTeodor.Api.Data;
 using EduardTeodor.Api.Endpoints;
 using EduardTeodor.Api.Repositories;
+using EduardTeodor.Api.Service;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -14,7 +15,9 @@ builder.Services.AddDbContextPool<AppDbContext>(opt =>
 );
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddOpenApi();
 
 builder.Services.ConfigureHttpJsonOptions(o =>

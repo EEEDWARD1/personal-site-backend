@@ -2,6 +2,7 @@ using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Tags;
 using Microsoft.AspNetCore.Http.HttpResults;
 using EduardTeodor.Api.Repositories;
+using EduardTeodor.Api.Service;
 
 namespace EduardTeodor.Api.Endpoints;
 
@@ -16,9 +17,9 @@ public static class TagEndpoints
 
     private static async Task<Ok<PagedResponse<TagResponse>>> GetTags(
         [AsParameters] TagQuery query,
-        ITagRepository repository)
+        ITagService service)
     {
-        var tags = await repository.GetTagsAsync(query);
+        var tags = await service.GetTagsAsync(query);
         return TypedResults.Ok(tags);
     }
 }

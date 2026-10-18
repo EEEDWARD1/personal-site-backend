@@ -1,6 +1,7 @@
 using EduardTeodor.Api.DTOs;
 using EduardTeodor.Api.DTOs.Posts;
 using EduardTeodor.Api.Models;
+using EduardTeodor.Api.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,24 +25,24 @@ public static class PostEndpoints
 
     private static async Task<Results<Ok<PagedResponse<PostTitleResponse>>, BadRequest<ProblemDetails>>> GetPublishedPostTitles(
         [AsParameters] PostQuery query,
-        IPostRepository repository)
+        IPostService service)
     {
         if (!TryParsePostType(query.Type, out var type))
             return TypedResults.BadRequest(CreateInvalidTypeProblem(query.Type));
 
-        var titles = await repository.GetPublishedPostTitlesAsync(query, type);
+        var titles = await service.GetPublishedPostTitlesAsync(query, type);
 
         return TypedResults.Ok(titles);
     }
 
     private static async Task<Results<Ok<PagedResponse<PostSummaryResponse>>, BadRequest<ProblemDetails>>> GetPublishedPostSummaries(
         [AsParameters] PostQuery query,
-        IPostRepository repository)
+        IPostService service)
     {
         if (!TryParsePostType(query.Type, out var type))
             return TypedResults.BadRequest(CreateInvalidTypeProblem(query.Type));
 
-        var summaries = await repository.GetPublishedPostSummariesAsync(query, type);
+        var summaries = await service.GetPublishedPostSummariesAsync(query, type);
 
         return TypedResults.Ok(summaries);
     }
@@ -72,9 +73,9 @@ public static class PostEndpoints
     
     private static async Task<Results<Ok<PostDetailedResponse>, NotFound>> GetPublishedPostBySlug(
         string slug,
-        IPostRepository repository)
+        IPostService service)
     {
-        var post = await repository.GetPublishedPostBySlugAsync(slug);
+        var post = await service.GetPublishedPostBySlugAsync(slug);
 
         return post is null
             ? TypedResults.NotFound()

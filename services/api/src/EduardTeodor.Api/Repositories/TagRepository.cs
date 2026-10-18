@@ -1,13 +1,13 @@
 using EduardTeodor.Api.Data;
-using EduardTeodor.Api.DTOs;
-using EduardTeodor.Api.DTOs.Tags;
+using EduardTeodor.Api.Models;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace EduardTeodor.Api.Repositories;
 
-public class TagRepository(AppDbContext db) : ITagRepository
+public class TagRepository(AppDbContext context) : ITagRepository
 {
-    public async Task<PagedResponse<TagResponse>> GetTagsAsync(TagQuery query)
+    /**public async Task<PagedResponse<TagResponse>> GetTagsAsync(TagQuery query)
     {
         var tags = db.Tags.AsNoTracking();
         var totalCount = await tags.CountAsync();
@@ -25,5 +25,25 @@ public class TagRepository(AppDbContext db) : ITagRepository
             .ToListAsync();
 
         return new PagedResponse<TagResponse>(items, page, pageSize, totalCount);
+    }**/
+
+    private readonly AppDbContext _context = context;
+
+    public async Task<(IReadOnlyList<Tag> Items, int TotalCount)> GetPageAsync(
+        int skip, 
+        int take)
+    {
+        var tags = _context.Tags.AsNoTracking();
+
+        var totalCount = await tags.CountAsync();
+
+        var items = await tags
+            .OrderBy(t => t.Name)
+            .ThenBy(t => t.Id)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+        
+        return(items, totalCount);
     }
 }
