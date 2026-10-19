@@ -2,14 +2,61 @@ services:
   api:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Clerk__Issuer: ${CLERK_ISSUER:-https://clerk.eduardteodor.co.uk}
     restart: unless-stopped
+    networks:
+      - default
+      - cms_backend
   db:
     restart: unless-stopped
+  cms:
+    container_name: et-cms
+    build:
+      context: ./services/cms
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:?Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY for the CMS build}
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      API_BASE_URL: http://api:8080/v1
+      CMS_ORIGIN: https://cms.eduardteodor.co.uk
+      CLERK_ISSUER: ${CLERK_ISSUER:-https://clerk.eduardteodor.co.uk}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set CLERK_SECRET_KEY for the CMS runtime}
+    depends_on:
+      api:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - cms_backend
+      - cms_edge
   cloudflared:
+    container_name: et-cf
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
-      - api
+      api:
+        condition: service_started
+      cms:
+        condition: service_healthy
+    networks:
+      - default
+      - cms_edge
     restart: unless-stopped
+
+# One tunnel connector serves both API and CMS hostname routes.
+# CMS-to-API traffic uses cms_backend; tunnel-to-CMS uses cms_edge.
+# Outbound access remains available for Clerk authentication.
+networks:
+  cms_backend:
+  cms_edge:
