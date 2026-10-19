@@ -16,6 +16,10 @@ RUN dotnet restore src/EduardTeodor.Api
 COPY . .
 RUN dotnet publish src/EduardTeodor.Api -c Release -o /app --no-restore
 
+# CI explicitly builds this target before replacing production services.
+FROM build AS test
+RUN dotnet test EduardTeodor.slnx -c Release
+
 # ---------- Runtime stage ----------
 # Slim ASP.NET Core runtime image: can run the app but can't build it.
 # Much smaller and has less attack surface than the SDK image.
@@ -29,6 +33,9 @@ COPY --from=build /app .
 # Documents the port the app listens on (.NET 8+ defaults to 8080).
 # Doesn't publish it; docker-compose's "ports:" does that.
 EXPOSE 8080
+
+# Run as the unprivileged user provided by the official .NET image.
+USER $APP_UID
 
 # Start the API when the container runs.
 # File name is case-sensitive on Linux.

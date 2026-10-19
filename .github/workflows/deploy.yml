@@ -15,29 +15,88 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: [self-hosted, linux, x64, etvm]
     environment: production
     env:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      JWT_KEY: ${{ secrets.JWT_KEY }}
       CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
+      CLERK_ISSUER: ${{ vars.CLERK_ISSUER || 'https://clerk.eduardteodor.co.uk' }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Check deployment secrets
         run: |
-          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB JWT_KEY CLOUDFLARE_TUNNEL_TOKEN; do
+          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB CLOUDFLARE_TUNNEL_TOKEN NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY CLERK_SECRET_KEY; do
             if [ -z "${!name}" ]; then
               echo "::error::Required secret $name is not configured"
               exit 1
             fi
           done
+          if [[ "$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" != pk_live_* || "$CLERK_SECRET_KEY" != sk_live_* ]]; then
+            echo "::error::The public CMS requires matching Clerk production keys (pk_live_ / sk_live_)."
+            exit 1
+          fi
+          if [[ "$CLERK_ISSUER" != https://* || "$CLERK_ISSUER" == *clerk.accounts.dev* ]]; then
+            echo "::error::CLERK_ISSUER must be the production HTTPS issuer, not a development Clerk domain."
+            exit 1
+          fi
+
+      - name: API tests (Release)
+        run: docker build --target test -f services/api/Dockerfile services/api
+
+      - name: CMS tests and lint
+        run: docker build --target test -f services/cms/Dockerfile services/cms
 
       - name: Build production images
         run: docker compose -f compose.yml -f compose.prod.yml build
 
+      - name: Verify Clerk before replacing production services
+        run: |
+          docker compose -f compose.yml -f compose.prod.yml run --rm --no-deps -T cms node -e '
+            (async () => {
+              const issuer = process.env.CLERK_ISSUER;
+              const publicKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+              const frontendDomain = Buffer.from(publicKey.slice("pk_live_".length), "base64").toString("utf8").replace(/\$$/, "");
+              if (`https://${frontendDomain}` !== issuer)
+                throw new Error("Clerk publishable key does not match CLERK_ISSUER");
+              const response = await fetch(`${issuer}/.well-known/openid-configuration`, {
+                signal: AbortSignal.timeout(15000), redirect: "error"
+              });
+              if (!response.ok) throw new Error(`Clerk discovery returned ${response.status}`);
+              const discovery = await response.json();
+              if (discovery.issuer !== issuer || new URL(discovery.jwks_uri).origin !== new URL(issuer).origin)
+                throw new Error("Clerk issuer/JWKS metadata mismatch");
+              const jwksResponse = await fetch(discovery.jwks_uri, { signal: AbortSignal.timeout(15000), redirect: "error" });
+              if (!jwksResponse.ok || !(await jwksResponse.json()).keys?.some(k => k.kty === "RSA"))
+                throw new Error("Clerk signing keys are unavailable");
+              console.log("Production Clerk discovery and signing keys verified.");
+            })().catch(error => { console.error(error.message); process.exit(1); });
+          '
+
       - name: Deploy production stack
-        run: docker compose -f compose.yml -f compose.prod.yml up -d --remove-orphans
+        run: docker compose -f compose.yml -f compose.prod.yml up -d --remove-orphans --wait --wait-timeout 180
+
+      - name: Verify CMS and private API connection
+        run: |
+          docker compose -f compose.yml -f compose.prod.yml exec -T cms node -e '
+            (async () => {
+              for (const [url, expected] of [
+                ["http://127.0.0.1:3000/health", 200],
+                ["http://api:8080/health", 200],
+                ["http://api:8080/v1/posts/titles?pageSize=1", 200],
+                ["http://api:8080/v1/tags?pageSize=1", 200],
+                ["http://api:8080/api/v1/posts/titles", 404],
+                ["http://api:8080/v1/admin/posts", 401],
+                [`${process.env.CLERK_ISSUER}/.well-known/openid-configuration`, 200]
+              ]) {
+                const response = await fetch(url, { signal: AbortSignal.timeout(10000), redirect: "error" });
+                if (response.status !== expected) throw new Error(`${url}: expected ${expected}, got ${response.status}`);
+                console.log(`${url}: ${response.status}`);
+              }
+            })().catch(error => { console.error(error.message); process.exit(1); });
+          '

@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         build.Entity<Post>(entity =>
         {
             entity.ToTable("posts");
+            entity.Property(p => p.Version).IsRowVersion();
             entity.Property(p => p.Id).HasDefaultValueSql("uuidv7()");
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
             entity.Property(p => p.UpdatedAt)
@@ -27,8 +28,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(t => t.Posts)
                 .UsingEntity(
                     "post_tags",
-                    r => r.HasOne(typeof(Tag)).WithMany().HasForeignKey("tag_id"),
-                    l => l.HasOne(typeof(Post)).WithMany().HasForeignKey("post_id"));
+                    r => r.HasOne(typeof(Tag))
+                        .WithMany()
+                        .HasForeignKey("tag_id"),
+                    l => l.HasOne(typeof(Post))
+                        .WithMany()
+                        .HasForeignKey("post_id"));
         });
 
         build.Entity<Tag>(entity =>

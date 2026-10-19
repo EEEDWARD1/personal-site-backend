@@ -12,6 +12,7 @@ public class Post
     public DateTime? PublishedAt { get; set; }
     public DateTime CreatedAt { get; set; }          // DB: now()
     public DateTime UpdatedAt { get; set; }          // DB: trigger
+    public uint Version { get; set; }               // PostgreSQL xmin concurrency token
 
     public ICollection<Tag> Tags { get; set; } = [];
 }
